@@ -16,9 +16,7 @@ function δ(ops)
         name = Symbol("δ$(line.name)")
         temp = gensym(name)
         push!(body, :($temp = $name($(line.inputs...))))
-        for k in 1:length(line.outputs)
-            push!(body, :($(line.outputs[k]) = $temp[$k]))
-        end
+        [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
         push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
     end
     push!(body, ∇(ops, nablas))
