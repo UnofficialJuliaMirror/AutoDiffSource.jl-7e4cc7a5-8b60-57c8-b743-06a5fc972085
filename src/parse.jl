@@ -53,15 +53,14 @@ const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :dotplus, :(+)
                      :(./) => :dotdivide, :(/) => :divide, :(.-) => :dotminus, :(-) => :minus,
                      :(.^) => :dotpower, :(^) => :power)
 
-function parse_arg!(ops, info, arg)
-    @assert typeof(arg) == Expr || typeof(arg) == Symbol "Do not know how to handle $arg"
-    if typeof(arg) == Expr
-        func, inputs = parse_expr!(ops, info, arg)
-        arg = Symbol("tmp$(length(ops)+1)")
-        push!(ops, Op(func, inputs, [arg], [], info))
-    end
+function parse_arg!(ops, info, arg::Expr)
+    func, inputs = parse_expr!(ops, info, arg)
+    arg = Symbol("tmp$(length(ops)+1)")
+    push!(ops, Op(func, inputs, [arg], [], info))
     arg
 end
+
+parse_arg!(ops, info, arg::Symbol) = arg
 
 function parse_tuple!(ops, info, expr)
     @assert expr.head == :tuple
