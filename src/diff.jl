@@ -29,7 +29,7 @@ end
 
 function ∇(ops, nablas)
     name = Symbol("∇$(ops.name)")
-    inputs =  [Symbol("∂$x") for x in ops.outputs]
+    inputs = map(topartial, ops.outputs)
     func = :(function $name($(inputs...)); end)
     if length(inputs) == 1
         func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1.0)
@@ -41,19 +41,21 @@ function ∇(ops, nablas)
     for line in reverse(ops.body)
         push_if_changed!(body, last_info, line.info)
         nabla = pop!(nablas)
-        ins = [Symbol("∂$x") for x in line.outputs]
-        outs = [Symbol("∂$x") for x in line.inputs]
+        ins = map(topartial, line.outputs)
+        outs = map(topartial, line.inputs)
         dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
-        push!(body, :($(to_tuple_or_expr(dedup)) = $nabla($(ins...))))
+        push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
         [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
     end
 
-    outputs = [Symbol("∂$x") for x in ops.inputs]
-    push!(body, to_tuple_or_expr(outputs))
+    outputs = map(topartial, ops.inputs)
+    push!(body, toexpr(outputs))
     func
 end
 
-to_tuple_or_expr(symbols) = length(symbols) == 1 ? symbols[1] : Expr(:tuple, symbols...)
+topartial(expr::Symbol) = Symbol("∂$expr")
+topartial(expr::Expr) = Symbol("∂$(expr.args[1])")
+toexpr(symbols) = length(symbols) == 1 ? symbols[1] : Expr(:tuple, symbols...)
 
 function push_if_changed!(body, last_info, info)
     if last_info[1] != info

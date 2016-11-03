@@ -5,7 +5,7 @@ using Base.Test
 
 @test checkdiff(f, δf, 2., 3.)
 
-@δ function f2(x, y)
+@δ function f2(x, y::AbstractFloat)
     (x - y) / y
 end
 

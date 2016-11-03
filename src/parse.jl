@@ -1,8 +1,8 @@
 type Op
     name::Symbol
-    inputs::Vector{Symbol}
-    outputs::Vector{Symbol}
-    body::Vector{Op}
+    inputs::Vector
+    outputs::Vector
+    body::Vector
     info::Expr
 end
 
