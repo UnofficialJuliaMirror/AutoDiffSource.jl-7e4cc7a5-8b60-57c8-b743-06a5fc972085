@@ -45,9 +45,7 @@ function ∇(ops, nablas)
         push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
         [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
     end
-
-    outputs = map(topartial, ops.inputs)
-    push!(body, toexpr(outputs))
+    push!(body, toexpr(map(topartial, ops.inputs)))
     func
 end
 
