@@ -48,11 +48,7 @@ function ∇(ops, nablas)
         outs = [Symbol("∂$x") for x in line.inputs]
         dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
         push!(body, :($(to_tuple_or_expr(dedup)) = $nabla($(ins...))))
-        for k in 1:length(outs)
-            if outs[k] != dedup[k]
-                push!(body, :($(outs[k]) += $(dedup[k])))
-            end
-        end
+        [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
     end
 
     outputs = [Symbol("∂$x") for x in ops.inputs]
@@ -60,4 +56,4 @@ function ∇(ops, nablas)
     func
 end
 
-to_tuple_or_expr(o) = length(o) == 1 ? o[1] : Expr(:tuple, o...)
+to_tuple_or_expr(symbols) = length(symbols) == 1 ? symbols[1] : Expr(:tuple, symbols...)
