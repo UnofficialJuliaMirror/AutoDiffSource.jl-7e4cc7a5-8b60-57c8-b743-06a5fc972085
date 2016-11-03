@@ -8,22 +8,25 @@ function δ(ops)
     body = func.args[2].args
     empty!(body)
     info = Expr(:line)
+    nablas = []
     for line in ops.body
         if info != line.info
             info = line.info
             push!(body, info)
         end
-        nabla = Symbol("∇$(line.name)_$(line.outputs[1])")
+        nabla = gensym("∇$(line.name)")
+        push!(body, :(global $nabla)) # work around for https://github.com/JuliaLang/julia/issues/15276
+        push!(nablas, nabla)
         name = Symbol("δ$(line.name)")
         push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...))))
     end
-    push!(body, ∇(ops))
+    push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
     @show func
     func
 end
 
-function ∇(ops)
+function ∇(ops, nablas)
     name = Symbol("∇$(ops.name)")
     inputs =  [Symbol("∂$x") for x in ops.outputs]
     func = :(function $name($(inputs...)); end)
@@ -37,7 +40,7 @@ function ∇(ops)
             info = line.info
             push!(body, info)
         end
-        nabla = Symbol("∇$(line.name)_$(line.outputs[1])")
+        nabla = pop!(nablas)
         i = [Symbol("∂$x") for x in line.outputs]
         o = [Symbol("∂$x") for x in line.inputs]
 
