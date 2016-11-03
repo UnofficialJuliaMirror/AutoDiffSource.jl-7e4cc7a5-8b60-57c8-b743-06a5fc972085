@@ -17,7 +17,7 @@ function δ(ops)
         nabla = gensym("∇$(line.name)")
         push!(nablas, nabla)
         name = Symbol("δ$(line.name)")
-        temp = gensym("temp")
+        temp = gensym(name)
         push!(body, :($temp = $name($(line.inputs...))))
         for k in 1:length(line.outputs)
             push!(body, :($(line.outputs[k]) = $temp[$k]))
@@ -37,40 +37,22 @@ function ∇(ops, nablas)
     body = func.args[2].args
     empty!(body)
     info = Expr(:line)
-    partials = Set(inputs)
-    temp = 1
+    dupes = Set(inputs)
     for line in reverse(ops.body)
         if info != line.info
             info = line.info
             push!(body, info)
         end
         nabla = pop!(nablas)
-        i = [Symbol("∂$x") for x in line.outputs]
-        o = [Symbol("∂$x") for x in line.inputs]
-
-        inter = intersect(partials, Set(o))
-        if length(inter) > 0 # XXX or same variable is used twice in the inputs
-            if length(o) == 1
-                push!(body, :($(to_tuple_or_expr(o)) += $nabla($(i...))))
-            else
-                oo = copy(o)
-                for k in 1:length(o)
-                    if in(o[k], inter)
-                        oo[k] = Symbol("temp$temp")
-                        temp += 1
-                    end
-                end
-                push!(body, :($(to_tuple_or_expr(oo)) = $nabla($(i...))))
-                for k in 1:length(o)
-                    if in(o[k], inter)
-                        push!(body, :($(o[k]) += $(oo[k])))
-                    end
-                end
+        ins = [Symbol("∂$x") for x in line.outputs]
+        outs = [Symbol("∂$x") for x in line.inputs]
+        dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
+        push!(body, :($(to_tuple_or_expr(dedup)) = $nabla($(ins...))))
+        for k in 1:length(outs)
+            if outs[k] != dedup[k]
+                push!(body, :($(outs[k]) += $(dedup[k])))
             end
-        else
-            push!(body, :($(to_tuple_or_expr(o)) = $nabla($(i...))))
         end
-        [push!(partials, e) for e in o]
     end
 
     outputs = [Symbol("∂$x") for x in ops.inputs]
