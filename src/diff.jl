@@ -15,7 +15,7 @@ function δ(ops)
             push!(body, info)
         end
         nabla = gensym("∇$(line.name)")
-        push!(body, :(global $nabla)) # work around for https://github.com/JuliaLang/julia/issues/15276
+        # push!(body, :(global $nabla)) # work around for https://github.com/JuliaLang/julia/issues/15276
         push!(nablas, nabla)
         name = Symbol("δ$(line.name)")
         push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...))))
