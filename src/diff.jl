@@ -15,10 +15,14 @@ function δ(ops)
             push!(body, info)
         end
         nabla = gensym("∇$(line.name)")
-        # push!(body, :(global $nabla)) # work around for https://github.com/JuliaLang/julia/issues/15276
         push!(nablas, nabla)
         name = Symbol("δ$(line.name)")
-        push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...))))
+        temp = gensym("temp")
+        push!(body, :($temp = $name($(line.inputs...))))
+        for k in 1:length(line.outputs)
+            push!(body, :($(line.outputs[k]) = $temp[$k]))
+        end
+        push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
     end
     push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
