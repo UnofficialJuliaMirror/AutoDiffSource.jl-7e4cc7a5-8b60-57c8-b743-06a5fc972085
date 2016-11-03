@@ -25,7 +25,7 @@ function parse_function(expr)
         elseif line.head == :call
             outputs = [parse_arg!(ops, info, line)]
         elseif line.head == :tuple
-            outputs = parse_tuple!(ops, info, line)
+            outputs = [parse_arg!(ops, info, arg) for arg in line.args]
         elseif line.head == :line
             info = line
         else
@@ -61,8 +61,3 @@ function parse_arg!(ops, info, arg::Expr)
 end
 
 parse_arg!(ops, info, arg::Symbol) = arg
-
-function parse_tuple!(ops, info, expr)
-    @assert expr.head == :tuple
-    [parse_arg!(ops, info, arg) for arg in expr.args]
-end
