@@ -1,3 +1,3 @@
-function checkgrad(f, δf, args...)
+function checkdiff(f, δf, args...)
     true
 end
