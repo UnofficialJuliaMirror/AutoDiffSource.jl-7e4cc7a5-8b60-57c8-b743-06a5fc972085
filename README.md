@@ -3,32 +3,31 @@
 
 Automatically differentiate a function with a ```δ``` macro:
 ```
-@δ ff(x, y) = (x + y) * y
+@δ f(x, y) = (x + y) * y
 ```
 
-That will generate both a regular function ```ff``` and a special ```δff``` function:
+That will generate both a regular function ```f``` and a special ```δf``` function:
 ```
-z1 = ff(x, y)
-z2, ∇f = δff(x, y)
+z, ∇f = δf(x, y)
 ∂x, ∂y = ∇f()
 ```
 
 Functions can be nested and corresponding ```δ``` functions are found by convention, multiple return values are supported too:
 ```
-@δ function f(x, y) 
-   q = ff(x * y, y) * x
+@δ function ff(x, y) 
+   q = f(x * y, y) * x
    q + y, q - x
 end
 ```
 
 To calculate the value and get a closure to calculate the gradient just call a δ function:
 ```
-z, t, ∇f = δf(x, y)
+z, t, ∇ff = δff(x, y)
 ```
 
 To calculate the gradient later, once partial derivates are known, just call the closure as a regular function:
 ```
-∂x, ∂y = ∇f(∂z, ∂t)
+∂x, ∂y = ∇ff(∂z, ∂t)
 ```
 
 You can define a function with your own gradient calculations:
