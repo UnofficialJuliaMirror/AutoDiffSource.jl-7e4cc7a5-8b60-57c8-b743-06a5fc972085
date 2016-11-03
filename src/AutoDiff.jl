@@ -2,7 +2,7 @@ module AutoDiff
 
 export @δ, checkdiff
 
-export δplus, δtimes
+export δplus, δminus, δtimes, δdivide
 
 include("parse.jl")
 include("diff.jl")
