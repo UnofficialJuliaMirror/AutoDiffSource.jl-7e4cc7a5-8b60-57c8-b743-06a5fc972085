@@ -7,13 +7,10 @@ function δ(ops)
     func = :(function $name($(ops.inputs...)); end)
     body = func.args[2].args
     empty!(body)
-    info = Expr(:line)
     nablas = []
+    last_info = [Expr(:line)]
     for line in ops.body
-        if info != line.info
-            info = line.info
-            push!(body, info)
-        end
+        push_if_changed!(body, last_info, line.info)
         nabla = gensym("∇$(line.name)")
         push!(nablas, nabla)
         name = Symbol("δ$(line.name)")
@@ -39,13 +36,10 @@ function ∇(ops, nablas)
     end
     body = func.args[2].args
     empty!(body)
-    info = Expr(:line)
     dupes = Set(inputs)
+    last_info = [Expr(:line)]
     for line in reverse(ops.body)
-        if info != line.info
-            info = line.info
-            push!(body, info)
-        end
+        push_if_changed!(body, last_info, line.info)
         nabla = pop!(nablas)
         ins = [Symbol("∂$x") for x in line.outputs]
         outs = [Symbol("∂$x") for x in line.inputs]
@@ -60,3 +54,10 @@ function ∇(ops, nablas)
 end
 
 to_tuple_or_expr(symbols) = length(symbols) == 1 ? symbols[1] : Expr(:tuple, symbols...)
+
+function push_if_changed!(body, last_info, info)
+    if last_info[1] != info
+        last_info[1] = info
+        push!(body, info)
+    end
+end
