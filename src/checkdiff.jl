@@ -1,12 +1,13 @@
 function checkdiff(f, δf, x0...)
     x = [x0...]
     y0 = f(x...)
+    @assert length(y0) == 1 "Scalar functions only"
     y, ∇f = δf(x...)
     if !isapprox(y0, y)
-        @show "return values do not match"
+        @show "function values do not match"
         return false
     end
-    ∂x = ∇f(1.)
+    ∂x = ∇f()
 
     h = 1e-8
 
