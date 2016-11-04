@@ -2,7 +2,7 @@
 
 | master (on nightly + release) | Coverage |
 |:-----------------------------:|:-----------:|
-|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/gaika/AutoDiff.jl/badge.png?branch=master)](https://coveralls.io/r/gaika/AutoDiff.jl?branch=master) |
+|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiff.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiff.jl?branch=master) |
 
 Automatically differentiate a function with a ```δ``` macro:
 ```
