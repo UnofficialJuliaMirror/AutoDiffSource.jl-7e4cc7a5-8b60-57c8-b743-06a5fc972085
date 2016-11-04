@@ -55,11 +55,9 @@ end
 
 function pretty(name, args)
     n = get(opnames, name, name)
-    if length(args) == 2
-        if isa(args[1], Number)
-            return Symbol("$(n)1")
-        elseif isa(args[2], Number)
-            return Symbol("$(n)2")
+    for k = 1:length(args)
+        if isa(args[k], Number)
+            n = Symbol("$(n)_$k")
         end
     end
     n
