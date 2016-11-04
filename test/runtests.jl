@@ -1,4 +1,4 @@
-using AutoDiff
+using AutoDiffSource
 using Base.Test
 
 @δ f(x, y) = (x + y) * y

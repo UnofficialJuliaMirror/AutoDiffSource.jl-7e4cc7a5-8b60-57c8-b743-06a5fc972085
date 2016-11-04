@@ -1,5 +1,5 @@
 __precompile__()
-module AutoDiff
+module AutoDiffSource
 
 export @δ, checkdiff
 
