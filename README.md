@@ -1,10 +1,12 @@
-| master (on nightly + release) | Coverage |
-|:-----------------------------:|:-----------:|
-|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiff.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiff.jl?branch=master) |
-
 # AutoDiff
 
-Automatically differentiate a function with a ```δ``` macro:
+Automatic differentiation with source code transformation
+
+| master (on nightly + release) | Coverage |
+|:-----------------------------:|:--------:|
+|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiff.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiff.jl?branch=master) |
+
+Differentiate a function with a ```δ``` macro:
 ```
 @δ f(x, y) = (x + y) * y
 ```
