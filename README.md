@@ -1,3 +1,7 @@
+| master (on nightly + release) | Coverage |
+|:-----------------------------:|:-----------:|
+|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiff.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiff.jl?branch=master) |
+
 # AutoDiff
 
 Automatically differentiate a function with a ```δ``` macro:
@@ -40,6 +44,3 @@ Can be used as a building block for other functions:
 @δ fff(x, y) = div(x, y) + y
 ```
 
-| master (on nightly + release) | Coverage |
-|:-----------------------------:|:-----------:|
-|[![Build Status](https://travis-ci.org/gaika/AutoDiff.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiff.jl) | [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiff.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiff.jl?branch=master) |
