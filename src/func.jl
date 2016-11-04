@@ -8,3 +8,9 @@
 
 
 δdivide(x::AbstractFloat, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -z*t/y)))
+
+
+δabs(x) = (abs.(x), z->z.*sign.(x))
+
+
+δsum(x::AbstractVector) = (sum(x), z->fill(z, length(x)))

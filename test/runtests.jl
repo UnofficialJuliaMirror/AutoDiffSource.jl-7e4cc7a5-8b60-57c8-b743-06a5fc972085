@@ -10,3 +10,7 @@ using Base.Test
 end
 
 @test checkdiff(f2, δf2, 2., 3.)
+
+@δ f3(x) = sum(abs.(x))
+
+@test checkdiff(f3, δf3, rand(100)-0.5)

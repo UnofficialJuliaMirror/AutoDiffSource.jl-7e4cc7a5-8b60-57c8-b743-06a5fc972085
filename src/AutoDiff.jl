@@ -3,7 +3,7 @@ module AutoDiff
 
 export @δ, checkdiff
 
-export δplus, δminus, δtimes, δdivide
+export δplus, δminus, δtimes, δdivide, δabs, δsum
 
 include("parse.jl")
 include("diff.jl")

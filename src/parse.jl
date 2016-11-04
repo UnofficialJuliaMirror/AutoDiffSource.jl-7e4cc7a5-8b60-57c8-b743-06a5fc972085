@@ -22,7 +22,7 @@ function parse_function(expr)
     for line in body.args
         if line.head == :(=)
             outputs = parse_kw!(ops, info, line.args...)
-        elseif line.head == :call
+        elseif line.head == :call || line.head == :(.)
             outputs = [parse_arg!(ops, info, line)]
         elseif line.head == :tuple
             outputs = [parse_arg!(ops, info, arg) for arg in line.args]
@@ -43,8 +43,13 @@ function parse_kw!(ops, info, vals, expr)
 end
 
 function parse_expr!(ops, info, expr)
-    @assert expr.head == :call "Do not know how to handle $expr"
-    pretty(expr.args[1]), [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
+    @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $expr"
+    if expr.head == :call
+        pretty(expr.args[1]), [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
+    else
+        @assert expr.args[2].head == :tuple "Do not know how to handle $expr"
+        expr.args[1], [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+    end
 end
 
 pretty(name) = get(opnames, name, name)
