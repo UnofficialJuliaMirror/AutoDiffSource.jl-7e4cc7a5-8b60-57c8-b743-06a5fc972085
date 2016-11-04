@@ -15,3 +15,16 @@ end
 @δ f3(x) = sum(abs.(x))
 
 @test checkdiff(f3, δf3, rand(100)-0.5)
+
+const ops = [:+, :-, :*, :/, :^]
+const oneargs = [:abs, :sum, :sqrt, :exp, :log]
+const dotops = [:.+, :.-, :.*, :./, :.^]
+const dotoneargs = [:abs, :sqrt, :exp, :log]
+const mixedops = [:+, :-, :*, :/, :^, :.+, :.-, :.*, :./, :.^]
+
+for o in oneargs
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x) = $o(x)
+    @eval @test checkdiff($t, $δt, rand())
+end
