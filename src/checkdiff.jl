@@ -4,8 +4,8 @@ function checkdiff(f, δf, x0...)
     @assert length(y0) == 1 "Scalar functions only"
     y, ∇f = δf(x...)
     if !isapprox(y0, y)
-        #        @show "function values do not match"
-        return false
+        error("function values do not match")
+        #        return false
     end
     ∂x = ∇f()
 
@@ -21,8 +21,8 @@ function checkdiff(f, δf, x0...)
             x2[k] += h
             y2 = f(x2...)
             if !isapprox(2h * ∂xx, y2-y1, atol=h)
-                #                @show "gradient for argument #$k doesn't match"
-                return false
+                error("gradient for argument #$k doesn't match")
+                #                return false
             end
         elseif isa(x[k], AbstractVector)
             for l = 1:length(x[k])
@@ -33,8 +33,8 @@ function checkdiff(f, δf, x0...)
                 x2[k][l] += h
                 y2 = f(x2...)
                 if !isapprox(2h * ∂xx[l], y2-y1, atol=h)
-                    #                    @show "gradient for argument #$k element $l doesn't match"
-                    return false
+                    error("gradient for argument #$k element $l doesn't match")
+                    # return false
                 end
             end
         elseif isa(x[k], AbstractArray)
@@ -47,8 +47,8 @@ function checkdiff(f, δf, x0...)
                     x2[k][l,m] += h
                     y2 = f(x2...)
                     if !isapprox(2h * ∂xx[l,m], y2-y1, atol=h)
-                        #                    @show "gradient for argument #$k element $l,$m doesn't match"
-                        return false
+                        error("gradient for argument #$k element $l,$m doesn't match")
+                        # return false
                     end
                 end
             end

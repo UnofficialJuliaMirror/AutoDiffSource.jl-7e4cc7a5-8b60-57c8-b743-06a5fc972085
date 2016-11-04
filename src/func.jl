@@ -4,9 +4,10 @@
 δdivide(x::AbstractFloat, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -z*t/y)))
 δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(z*y*t/x, z*t*log(x))))
 
+δminus(x) = (-x, z->-z)
 δabs(x) = (abs(x), z->z*sign(x))
 δsum(x::AbstractFloat) = (x, z->z)
-δsum(x::AbstractArray) = (t = size(x); (sum(x), z->fill(z, t)))
+δsum(x) = (t = size(x); (sum(x), z->fill(z, t)))
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
 δexp(x) = (t = exp(x); (t, z->z*t))
 δlog(x) = (log(x), z->z/x)
@@ -20,3 +21,36 @@
 δdotsqrt(x) = (t = sqrt.(x); (t, z->0.5*z./t))
 δdotexp(x) = (t = exp.(x); (t, z->z.*t))
 δdotlog(x) = (log.(x), z->z./x)
+
+δplus(x::AbstractFloat, y::AbstractArray) = (x+y, z->(sum(z), z))
+δplus(x::AbstractArray, y::AbstractFloat) = (x+y, z->(z, sum(z)))
+δminus(x::AbstractFloat, y::AbstractArray) = (x-y, z->(sum(z), -z))
+δminus(x::AbstractArray, y::AbstractFloat) = (x-y, z->(z, -sum(z)))
+δtimes(x::AbstractFloat, y::AbstractArray) = (x*y, z->(sum(z.*y), z.*x))
+δtimes(x::AbstractArray, y::AbstractFloat) = (x*y, z->(z.*y, sum(z.*x)))
+δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t./y))))
+
+δdotplus(x::AbstractVector, y::AbstractMatrix) = (x.+y, z->(sum(z, 2), z))
+δdotplus(x::AbstractMatrix, y::AbstractVector) = (x.+y, z->(z, sum(z, 2)))
+δdotplus(x::AbstractFloat, y::AbstractArray) = (x.+y, z->(sum(z), z))
+δdotplus(x::AbstractArray, y::AbstractFloat) = (x.+y, z->(z, sum(z)))
+
+δdotminus(x::AbstractVector, y::AbstractMatrix) = (x.-y, z->(sum(z, 2), -z))
+δdotminus(x::AbstractMatrix, y::AbstractVector) = (x.-y, z->(z, -sum(z, 2)))
+δdotminus(x::AbstractFloat, y::AbstractArray) = (x.-y, z->(sum(z), -z))
+δdotminus(x::AbstractArray, y::AbstractFloat) = (x.-y, z->(z, -sum(z)))
+
+δdottimes(x::AbstractVector, y::AbstractMatrix) = (x.*y, z->(sum(z.*y, 2), z.*x))
+δdottimes(x::AbstractMatrix, y::AbstractVector) = (x.*y, z->(z.*y, sum(z.*x, 2)))
+δdottimes(x::AbstractFloat, y::AbstractArray) = (x.*y, z->(sum(z.*y), z.*x))
+δdottimes(x::AbstractArray, y::AbstractFloat) = (x.*y, z->(z.*y, sum(z.*x)))
+
+δdotdivide(x::AbstractVector, y::AbstractMatrix) = (t = x./y; (t, z->(sum(z./y, 2), -z.*t./y)))
+δdotdivide(x::AbstractMatrix, y::AbstractVector) = (t = x./y; (t, z->(z./y, -sum(z.*t./y, 2))))
+δdotdivide(x::AbstractFloat, y::AbstractArray) = (t = x./y; (t, z->(sum(z./y), -z.*t./y)))
+δdotdivide(x::AbstractArray, y::AbstractFloat) = (t = x./y; (t, z->(z./y, -sum(z.*t)/y)))
+
+δdotpower(x::AbstractVector, y::AbstractMatrix) = (t = x.^y; (t, z->(sum(z.*y.*t./x, 2), z.*t.*log.(x))))
+δdotpower(x::AbstractMatrix, y::AbstractVector) = (t = x.^y; (t, z->(z.*y.*t./x, sum(z.*t.*log.(x), 2))))
+δdotpower(x::AbstractFloat, y::AbstractArray) = (t = x.^y; (t, z->(sum(z.*y.*t)/x, z.*t.*log.(x))))
+δdotpower(x::AbstractArray, y::AbstractFloat) = (t = x.^y; (t, z->(z.*y.*t./x, sum(z.*t.*log.(x)))))
