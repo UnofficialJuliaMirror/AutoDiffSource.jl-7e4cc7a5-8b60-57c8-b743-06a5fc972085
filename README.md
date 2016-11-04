@@ -1,10 +1,9 @@
 # AutoDiffSource
 
-Automatic differentiation with source code transformation
+Automatic differentiation with source code transformation in Julia (reverse mode)
 
-| master (on nightly + release) | Coverage |
-|:-----------------------------:|:--------:|
-|[![Build Status](https://travis-ci.org/gaika/AutoDiffSource.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiffSource.jl)|[![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiffSource.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiffSource.jl?branch=master)|
+[![Build Status](https://travis-ci.org/gaika/AutoDiffSource.jl.svg?branch=master)](https://travis-ci.org/gaika/AutoDiffSource.jl)
+[![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiffSource.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiffSource.jl?branch=master)
 
 Differentiate a function with a ```δ``` macro:
 ```
