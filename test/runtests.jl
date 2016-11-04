@@ -1,31 +1,33 @@
 using AutoDiffSource
 using Base.Test
 
+# check basic use
 @δ f(x, y) = (x + y) * y
-
 @test checkdiff(f, δf, 2., 3.)
 
+# check numerical constants
 @δ function f2(x, y::AbstractFloat)
     z = 2.5x - y^2
     z / y
 end
-
 @test checkdiff(f2, δf2, 2., 3.)
 
+# test broadcast
 @δ f3(x) = sum(abs.(x))
-
 @test checkdiff(f3, δf3, rand(5)-0.5)
 
-@δ function f4(x, y)
-    x * y, x - y
-end
-
+# test multi argument functions and reuse
+@δ f4(x, y) =  x * y, x - y
 @δ function f5(x)
     (a, b) = f4(x, x+3)
     a * x + 4b
 end
-
 @test checkdiff(f5, δf5, rand()-0.5)
+
+# test external constants
+const f6_const = rand(5)
+@δ f6(x) = sum(f6_const .* x)
+@test checkdiff(f6, δf6, rand(5))
 
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]
