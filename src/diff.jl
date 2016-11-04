@@ -21,7 +21,7 @@ function δ(ops)
     end
     push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
-    @show func
+    #    @show func
     func
 end
 

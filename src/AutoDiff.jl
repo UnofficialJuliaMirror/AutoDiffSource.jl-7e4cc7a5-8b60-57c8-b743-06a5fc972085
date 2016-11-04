@@ -10,4 +10,4 @@ include("diff.jl")
 include("func.jl")
 include("checkdiff.jl")
 
-end # module
+end
