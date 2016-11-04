@@ -39,6 +39,11 @@ for o in [:.+, :.-, :.*, :./, :.^]
 end
 
 for o in [:abs, :sqrt, :exp, :log]
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x) = sum($o.(x))
+    @eval @test checkdiff($t, $δt, rand(10))
+    @eval @test checkdiff($t, $δt, rand(3, 4))
 end
 
 for o in [:+, :-, :*, :/, :^, :.+, :.-, :.*, :./, :.^]

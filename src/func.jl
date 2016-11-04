@@ -16,5 +16,7 @@
 δdottimes{T}(x::T, y::T) = (x.*y, z->(z.*y, z.*x))
 δdotdivide{T}(x::T, y::T) = (t = x./y; (t, z->(z./y, -z.*t./y)))
 δdotpower{T}(x::T, y::T) = (t = x.^y; (t, z->(z.*y.*t./x, z.*t.*log.(x))))
-
 δdotabs(x) = (abs.(x), z->z.*sign.(x))
+δdotsqrt(x) = (t = sqrt.(x); (t, z->0.5*z./t))
+δdotexp(x) = (t = exp.(x); (t, z->z.*t))
+δdotlog(x) = (log.(x), z->z./x)
