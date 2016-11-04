@@ -6,7 +6,8 @@ using Base.Test
 @test checkdiff(f, δf, 2., 3.)
 
 @δ function f2(x, y::AbstractFloat)
-    (x - y) / y
+    z = x - y
+    z / y
 end
 
 @test checkdiff(f2, δf2, 2., 3.)
