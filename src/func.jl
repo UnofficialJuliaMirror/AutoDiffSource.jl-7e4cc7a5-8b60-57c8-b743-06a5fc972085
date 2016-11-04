@@ -2,6 +2,7 @@
 δminus(x::AbstractFloat, y::AbstractFloat) = (x-y, z->(z, -z))
 δtimes(x::AbstractFloat, y::AbstractFloat) = (x*y, z->(z*y, z*x))
 δdivide(x::AbstractFloat, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -z*t/y)))
+δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(z*y*t/x, z*t*log(x))))
 
 δabs(x) = (abs(x), z->z*sign(x))
 δsum(x::AbstractFloat) = (x, z->z)

@@ -22,6 +22,13 @@ const dotops = [:.+, :.-, :.*, :./, :.^]
 const dotoneargs = [:abs, :sqrt, :exp, :log]
 const mixedops = [:+, :-, :*, :/, :^, :.+, :.-, :.*, :./, :.^]
 
+for o in ops
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x, y) = $o(x, y)
+    @eval @test checkdiff($t, $δt, rand(), rand())
+end
+
 for o in oneargs
     t = gensym(o)
     δt = Symbol("δ$t")
