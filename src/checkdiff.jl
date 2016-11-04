@@ -13,20 +13,20 @@ function checkdiff(f, δf, x0...)
     for k = 1:length(x)
         ∂xx = length(x) == 1 ? ∂x : ∂x[k]
         if isa(x[k], AbstractFloat)
-            x2 = deepcopy(x)
-            x2[k] -= h
-            y1 = f(x2...)
+            x1 = deepcopy(x)
+            x1[k] -= h
+            y1 = f(x1...)
             x2 = deepcopy(x)
             x2[k] += h
             y2 = f(x2...)
             if !isapprox(2h * ∂xx, y2-y1, atol=h)
                 error("gradient for argument #$k doesn't match")
             end
-        elseif isa(x[k], AbstractVector)
-            for l = 1:length(x[k])
-                x2 = deepcopy(x)
-                x2[k][l] -= h
-                y1 = f(x2...)
+        elseif isa(x[k], AbstractArray)
+            for l = eachindex(x[k])
+                x1 = deepcopy(x)
+                x1[k][l] -= h
+                y1 = f(x1...)
                 x2 = deepcopy(x)
                 x2[k][l] += h
                 y2 = f(x2...)
@@ -34,22 +34,8 @@ function checkdiff(f, δf, x0...)
                     error("gradient for argument #$k element $l doesn't match")
                 end
             end
-        elseif isa(x[k], AbstractArray)
-            for l = 1:size(x[k], 1)
-                for m = 1:size(x[k], 2)
-                    x2 = deepcopy(x)
-                    x2[k][l,m] -= h
-                    y1 = f(x2...)
-                    x2 = deepcopy(x)
-                    x2[k][l,m] += h
-                    y2 = f(x2...)
-                    if !isapprox(2h * ∂xx[l,m], y2-y1, atol=h)
-                        error("gradient for argument #$k element $l,$m doesn't match")
-                    end
-                end
-            end
         else
-            error("not supported argument type: $(typeof(x[k]))")
+            error("not supported argument #$k type: $(typeof(x[k]))")
         end
     end
     true
