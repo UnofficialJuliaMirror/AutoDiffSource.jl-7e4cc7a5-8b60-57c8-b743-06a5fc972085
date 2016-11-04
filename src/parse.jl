@@ -48,14 +48,14 @@ function parse_expr!(ops, info, expr)
         pretty(expr.args[1]), [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
     else
         @assert expr.args[2].head == :tuple "Do not know how to handle $expr"
-        expr.args[1], [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+        "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     end
 end
 
 pretty(name) = get(opnames, name, name)
 
-const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :dotplus, :(+) => :plus,
-                     :(./) => :dotdivide, :(/) => :divide, :(.-) => :dotminus, :(-) => :minus,
+const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :plus, :(+) => :plus,
+                     :(./) => :dotdivide, :(/) => :divide, :(.-) => :minus, :(-) => :minus,
                      :(.^) => :dotpower, :(^) => :power)
 
 function parse_arg!(ops, info, arg::Expr)
