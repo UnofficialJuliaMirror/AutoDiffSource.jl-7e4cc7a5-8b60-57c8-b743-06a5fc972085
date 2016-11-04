@@ -8,7 +8,7 @@ Automatic differentiation with source code transformation in Julia (reverse mode
 
 Differentiate a function with a ```δ``` macro:
 ```
-@δ f(x, y) = (x + y) * y
+@δ f(x, y) = (x + 2y) * y^2
 ```
 
 That will generate both a regular function ```f``` and a special ```δf``` function:
@@ -44,4 +44,10 @@ div(x, y) = x / y
 Can be used as a building block for other functions:
 ```
 @δ fff(x, y) = div(x, y) + y
+```
+
+If you have external constants that you don't need to differentiate:
+```
+const c = rand(10)
+@δ ffff(x) = sum(c .* x)
 ```
