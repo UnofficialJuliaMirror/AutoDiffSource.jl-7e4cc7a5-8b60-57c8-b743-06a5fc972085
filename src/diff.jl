@@ -40,7 +40,7 @@ function ∇(ops, nablas)
         push_if_changed!(body, last_info, line.info)
         nabla = pop!(nablas)
         ins = map(topartial, line.outputs)
-        outs = map(topartial, line.inputs)
+        outs = map(topartial, filter(x->isa(x, Symbol), line.inputs))
         dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
         push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
         [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
