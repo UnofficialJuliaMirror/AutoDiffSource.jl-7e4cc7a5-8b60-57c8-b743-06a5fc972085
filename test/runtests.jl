@@ -16,6 +16,17 @@ end
 
 @test checkdiff(f3, δf3, rand(5)-0.5)
 
+@δ function f4(x, y)
+    x * y, x - y
+end
+
+@δ function f5(x)
+    (a, b) = f4(x, x+3)
+    a * x + 4b
+end
+
+@test checkdiff(f5, δf5, rand()-0.5)
+
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]
     t = gensym(o)
