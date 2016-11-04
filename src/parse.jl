@@ -54,8 +54,8 @@ end
 
 pretty(name) = get(opnames, name, name)
 
-const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :plus, :(+) => :plus,
-                     :(./) => :dotdivide, :(/) => :divide, :(.-) => :minus, :(-) => :minus,
+const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :dotplus, :(+) => :plus,
+                     :(./) => :dotdivide, :(/) => :divide, :(.-) => :dotminus, :(-) => :minus,
                      :(.^) => :dotpower, :(^) => :power)
 
 function parse_arg!(ops, info, arg::Expr)

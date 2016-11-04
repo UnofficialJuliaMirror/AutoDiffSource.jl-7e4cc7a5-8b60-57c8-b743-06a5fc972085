@@ -37,6 +37,21 @@ function checkdiff(f, δf, x0...)
                     return false
                 end
             end
+        elseif isa(x[k], AbstractArray)
+            for l = 1:size(x[k], 1)
+                for m = 1:size(x[k], 2)
+                    x2 = deepcopy(x)
+                    x2[k][l,m] -= h
+                    y1 = f(x2...)
+                    x2 = deepcopy(x)
+                    x2[k][l,m] += h
+                    y2 = f(x2...)
+                    if !isapprox(2h * ∂xx[l,m], y2-y1, atol=h)
+                        #                    @show "gradient for argument #$k element $l,$m doesn't match"
+                        return false
+                    end
+                end
+            end
         else
             error("not supported argument type: $(typeof(x[k]))")
         end

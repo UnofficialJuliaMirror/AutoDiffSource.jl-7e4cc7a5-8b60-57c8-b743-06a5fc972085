@@ -1,5 +1,5 @@
-δplus(x::AbstractFloat, y::AbstractFloat) = (x+y, z->(z, z))
-δminus(x::AbstractFloat, y::AbstractFloat) = (x-y, z->(z, -z))
+δplus{T}(x::T, y::T) = (x+y, z->(z, z))
+δminus{T}(x::T, y::T) = (x-y, z->(z, -z))
 δtimes(x::AbstractFloat, y::AbstractFloat) = (x*y, z->(z*y, z*x))
 δdivide(x::AbstractFloat, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -z*t/y)))
 δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(z*y*t/x, z*t*log(x))))
@@ -11,7 +11,10 @@
 δexp(x) = (t = exp(x); (t, z->z*t))
 δlog(x) = (log(x), z->z/x)
 
-δdotabs(x) = (abs.(x), z->z.*sign.(x))
+δdotplus{T}(x::T, y::T) = (x.+y, z->(z, z))
+δdotminus{T}(x::T, y::T) = (x.-y, z->(z, -z))
+δdottimes{T}(x::T, y::T) = (x.*y, z->(z.*y, z.*x))
+δdotdivide{T}(x::T, y::T) = (t = x./y; (t, z->(z./y, -z.*t./y)))
+δdotpower{T}(x::T, y::T) = (t = x.^y; (t, z->(z.*y.*t./x, z.*t.*log.(x))))
 
-# δpower
-# δdottimes, δdotdivide, δdotabs, δdotsqrt, δdotexp, δdotlog, δdotpower
+δdotabs(x) = (abs.(x), z->z.*sign.(x))
