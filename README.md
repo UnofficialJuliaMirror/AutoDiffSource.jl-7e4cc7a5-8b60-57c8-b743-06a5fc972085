@@ -13,7 +13,7 @@ Pkg.add("AutoDiffSource")
 using AutoDiffSource
 ```
 
-### Differentiate a function with a ```@δ``` macro
+### Differentiate a function with ```@δ``` macro
 ```
 @δ f(x, y) = (x + 2y) * y^2
 ```
