@@ -57,3 +57,7 @@ If you have external constants that you don't need to differentiate:
 const c = rand(10)
 @δ ffff(x) = sum(c .* x)
 ```
+
+### Similar efforts
+
+https://github.com/JuliaDiff/ReverseDiffSource.jl is pretty close and has more features. This one is faster, supports multiple return values, and since forward and backward passes are separate it can differentiate nested functions or be plugged in to your own gradient learning code with ease.
