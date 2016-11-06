@@ -60,4 +60,4 @@ const c = rand(10)
 
 ### Similar efforts
 
-https://github.com/JuliaDiff/ReverseDiffSource.jl is pretty close and has more features. AutoDiffSource is faster, easier to use, and supports functions with multiple return values. Since forward and backward passes are separate it can differentiate nested functions or be plugged in to your own gradient learning code with ease.
+https://github.com/JuliaDiff/ReverseDiffSource.jl is pretty close and has more features. AutoDiffSource is faster, easier to use, and supports functions with multiple return values. Since forward and backward passes are separate it can differentiate nested functions or be plugged in to your own gradient learning code.
