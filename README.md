@@ -6,14 +6,14 @@ Automatic differentiation with source code transformation in Julia (reverse mode
 [![Coverage Status](https://coveralls.io/repos/github/gaika/AutoDiffSource.jl/badge.svg?branch=master)](https://coveralls.io/github/gaika/AutoDiffSource.jl?branch=master)
 [![codecov](https://codecov.io/gh/gaika/AutoDiffSource.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/gaika/AutoDiffSource.jl)
 
-To install (requires Julia v0.5):
+### Install (requires Julia v0.5):
 ```
 Pkg.add("AutoDiffSource") 
 # Pkg.checkout("AutoDiffSource") # To stay on top of development releases
 using AutoDiffSource
 ```
 
-Differentiate a function with a ```δ``` macro:
+### Differentiate a function with a ```@δ``` macro
 ```
 @δ f(x, y) = (x + 2y) * y^2
 ```
