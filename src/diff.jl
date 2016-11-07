@@ -14,15 +14,15 @@ function δ(ops)
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        name = "$(line.name)"
+        name = string(line.name)
         for k = eachindex(line.inputs)
             if !isvar(line.inputs[k])
-                name = "$(name)_$k"
+                name *= "_$k"
             end
         end
-        nabla = gensym("∇$name")
+        nabla = gensym("∇" * name)
         push!(nablas, nabla)
-        name = Symbol("δ$name")
+        name = Symbol("δ" * name)
         temp = gensym(name)
         push!(body, :($temp = $name($(line.inputs...))))
         [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
