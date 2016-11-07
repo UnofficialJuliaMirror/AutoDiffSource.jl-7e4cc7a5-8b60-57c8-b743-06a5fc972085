@@ -77,4 +77,4 @@
 δdotpower_1(x, y) = (t = x.^y; (t, z->z.*t.*log(x)))
 δdotpower_2(x, y) = (t = x.^y; (t, z->z.*y.*t./x))
 
-δfanout(x::Vector) = (x..., (z...) -> [z...])
+δfanout(x) = (x..., (z...) -> [z...])
