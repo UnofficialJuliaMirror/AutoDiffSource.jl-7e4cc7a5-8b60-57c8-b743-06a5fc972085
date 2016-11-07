@@ -29,6 +29,13 @@ const f6_const = rand(5)
 @δ f6(x) = sum(f6_const .* x)
 @test checkdiff(f6, δf6, rand(5))
 
+# test ...
+@δ function f7(x)
+    a, b = x
+    a * b
+end
+@test checkdiff(f7, δf7, rand(2))
+
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]
     t = gensym(o)

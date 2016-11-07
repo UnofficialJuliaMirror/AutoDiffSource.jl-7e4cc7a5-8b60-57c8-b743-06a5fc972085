@@ -76,3 +76,5 @@
 δdotdivide_2(x, y) = (x./y, z->(z./y))
 δdotpower_1(x, y) = (t = x.^y; (t, z->z.*t.*log(x)))
 δdotpower_2(x, y) = (t = x.^y; (t, z->z.*y.*t./x))
+
+δfanout(x) = (x..., (z...) -> [z...])

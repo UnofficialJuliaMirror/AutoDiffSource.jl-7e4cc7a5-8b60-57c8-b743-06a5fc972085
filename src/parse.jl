@@ -42,7 +42,9 @@ function parse_kw!(ops, info, vals, expr)
     outputs
 end
 
-function parse_expr!(ops, info, expr)
+parse_expr!(ops, info, expr::Symbol) = :fanout, [expr]
+
+function parse_expr!(ops, info, expr::Expr)
     @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $(expr.head) on $expr"
     if expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
