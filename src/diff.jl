@@ -2,6 +2,9 @@ macro δ(expr)
     esc(:( $expr; $(δ(parse_function(expr); ))))
 end
 
+isvar(n::Number) = false
+isvar(n::Symbol) = true
+
 function δ(ops)
     name = Symbol("δ$(ops.name)")
     func = :(function $name($(ops.inputs...)); end)
@@ -11,9 +14,15 @@ function δ(ops)
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        nabla = gensym("∇$(line.name)")
+        name = "$(line.name)"
+        for k = eachindex(line.inputs)
+            if !isvar(line.inputs[k])
+                name = "$(name)_$k"
+            end
+        end
+        nabla = gensym("∇$name")
         push!(nablas, nabla)
-        name = Symbol("δ$(line.name)")
+        name = Symbol("δ$name")
         temp = gensym(name)
         push!(body, :($temp = $name($(line.inputs...))))
         [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
@@ -40,7 +49,7 @@ function ∇(ops, nablas)
         push_if_changed!(body, last_info, line.info)
         nabla = pop!(nablas)
         ins = map(topartial, line.outputs)
-        outs = map(topartial, filter(x->isa(x, Symbol), line.inputs))
+        outs = map(topartial, filter(isvar, line.inputs))
         dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
         push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
         [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]

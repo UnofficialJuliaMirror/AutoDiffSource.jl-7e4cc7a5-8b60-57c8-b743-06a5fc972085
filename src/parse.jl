@@ -46,23 +46,14 @@ function parse_expr!(ops, info, expr)
     @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $expr"
     if expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
-        pretty(expr.args[1], args), args
+        opname(expr.args[1]), args
     else
         @assert expr.args[2].head == :tuple "Do not know how to handle $expr"
         "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     end
 end
 
-function pretty(name, args)
-    n = get(opnames, name, name)
-    for k = 1:length(args)
-        if isa(args[k], Number)
-            n = Symbol("$(n)_$k")
-        end
-    end
-    n
-end
-
+opname(name) = get(opnames, name, name)
 const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :dotplus, :(+) => :plus,
                      :(./) => :dotdivide, :(/) => :divide, :(.-) => :dotminus, :(-) => :minus,
                      :(.^) => :dotpower, :(^) => :power)
