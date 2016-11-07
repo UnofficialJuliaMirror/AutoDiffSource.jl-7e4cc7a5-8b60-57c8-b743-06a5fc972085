@@ -35,14 +35,23 @@ function parse_function(expr)
     Op(name, inputs, outputs, ops, info)
 end
 
-function parse_kw!(ops, info, vals, expr)
+function parse_kw!(ops, info, vals, expr::Symbol)
+    @assert vals.head == :tuple "Do not know how to handle $(vals.head) on $vals"
+    func = "fanout"
+    if length(vals.args) <= 12
+        func *= string(length(vals.args))
+    end
+    outputs = [vals.args...]
+    push!(ops, Op(func, [expr], outputs, [], info))
+    outputs
+end
+
+function parse_kw!(ops, info, vals, expr::Expr)
     func, inputs = parse_expr!(ops, info, expr)
     outputs = typeof(vals) == Symbol ? [vals] : [vals.args...]
     push!(ops, Op(func, inputs, outputs, [], info))
     outputs
 end
-
-parse_expr!(ops, info, expr::Symbol) = :fanout, [expr]
 
 function parse_expr!(ops, info, expr::Expr)
     @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $(expr.head) on $expr"
