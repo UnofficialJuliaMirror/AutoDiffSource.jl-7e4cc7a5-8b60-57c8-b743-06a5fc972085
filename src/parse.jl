@@ -29,7 +29,7 @@ function parse_function(expr)
         elseif line.head == :line
             info = line
         else
-            error("Do not know how to handle $line")
+            error("Do not know how to handle $(line.head) on $line")
         end
     end
     Op(name, inputs, outputs, ops, info)
@@ -43,13 +43,14 @@ function parse_kw!(ops, info, vals, expr)
 end
 
 function parse_expr!(ops, info, expr)
-    @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $expr"
+    @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $(expr.head) on $expr"
     if expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
         opname(expr.args[1]), args
-    else
-        @assert expr.args[2].head == :tuple "Do not know how to handle $expr"
+    elseif expr.args[2].head == :tuple
         "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+    else
+        error("Do not know how to handle $(expr.head) on $expr")
     end
 end
 
