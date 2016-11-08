@@ -1,7 +1,7 @@
 __precompile__()
 module AutoDiffSource
 
-export @δ, checkdiff, checkdiff_any
+export @δ, checkdiff, checkgrad
 
 export δplus, δminus, δtimes, δdivide, δabs, δsum, δsqrt, δexp, δlog, δpower
 export δdotplus, δdotminus, δdottimes, δdotdivide, δdotabs, δdotsqrt, δdotexp, δdotlog, δdotpower
