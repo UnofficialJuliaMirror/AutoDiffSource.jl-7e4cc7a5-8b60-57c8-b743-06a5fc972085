@@ -8,9 +8,7 @@ function checkdiff(f, δf, x0...)
     checkgrad(f, x, ∂x)
 end
 
-function checkgrad(f, x, ∂x)
-    h = 1e-8
-
+function checkgrad(f, x, ∂x, h = 1e-8)
     for k = 1:length(x)
         ∂xx = length(x) == 1 ? ∂x : ∂x[k]
         if isa(x[k], AbstractFloat)
