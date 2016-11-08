@@ -58,10 +58,9 @@ function parse_expr!(ops, info, expr::Expr)
     if expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
         opname(expr.args[1]), args
-    elseif expr.args[2].head == :tuple
-        "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     else
-        error("Do not know how to handle $(expr.head) on $expr")
+        @assert expr.args[2].head == :tuple
+        "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     end
 end
 
