@@ -1,11 +1,26 @@
-function checkdiff(f, δf, x0...)
+import Base.Test
+
+function checkdiff_any(f, δf, x0...)
     x = [x0...]
     y0 = f(x...)
     @assert length(y0) == 1 "Scalar functions only"
     y, ∇f = δf(x...)
     isapprox(y0, y) || error("function values do not match")
     ∂x = ∇f()
+    checkgrad(f, x, ∂x)
+end
 
+function checkdiff(f, δf, x0...)
+    x = [x0...]
+    y0 = f(x...)
+    @assert length(y0) == 1 "Scalar functions only"
+    y, ∇f = Test.@inferred δf(x...)
+    isapprox(y0, y) || error("function values do not match")
+    ∂x = Test.@inferred ∇f()
+    checkgrad(f, x, ∂x)
+end
+
+function checkgrad(f, x, ∂x)
     h = 1e-8
 
     for k = 1:length(x)

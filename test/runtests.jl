@@ -41,7 +41,7 @@ end
     a, b, c, d, e, f, g, h, i, j, k, l, m, n = x
     a * b + c * d - e * f + g * h - i * j / k * l + m * n
 end
-@test checkdiff(f8, δf8, rand(14))
+@test checkdiff_any(f8, δf8, rand(14))
 
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]
