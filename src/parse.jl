@@ -21,7 +21,7 @@ function parse_function(expr)
 
     for line in body.args
         if line.head == :(=)
-            outputs = parse_kw!(ops, info, line.args...)
+            outputs = parse_assign!(ops, info, line.args...)
         elseif line.head == :call || line.head == :(.)
             outputs = [parse_arg!(ops, info, line)]
         elseif line.head == :tuple
@@ -35,7 +35,7 @@ function parse_function(expr)
     Op(name, inputs, outputs, ops, info)
 end
 
-function parse_kw!(ops, info, vals, expr::Symbol)
+function parse_assign!(ops, info, vals, expr::Symbol)
     @assert vals.head == :tuple "Do not know how to handle $(vals.head) on $vals"
     func = "fanout"
     if length(vals.args) <= 12
@@ -46,7 +46,7 @@ function parse_kw!(ops, info, vals, expr::Symbol)
     outputs
 end
 
-function parse_kw!(ops, info, vals, expr::Expr)
+function parse_assign!(ops, info, vals, expr::Expr)
     func, inputs = parse_expr!(ops, info, expr)
     outputs = typeof(vals) == Symbol ? [vals] : [vals.args...]
     push!(ops, Op(func, inputs, outputs, [], info))
