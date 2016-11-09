@@ -40,18 +40,18 @@ const f6_const = rand(5)
 @test checkdiff_inferred(f6, δf6, rand(5))
 
 # test ...
-@δ function f7(x)
+@δ function f7(x...)
     a, b = x
     a * b
 end
-@test checkdiff_inferred(f7, δf7, rand(2))
+@test checkdiff_inferred(f7, δf7, rand(2)...)
 
 # test ...
-@δ function f8(x)
+@δ function f8(x...)
     a, b, c, d, e, f, g, h, i, j, k, l, m, n = x
     a * b + c * d - e * f + g * h - i * j / k * l + m * n
 end
-@test checkdiff(f8, δf8, rand(14))
+@test checkdiff_inferred(f8, δf8, rand(14)...)
 
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]

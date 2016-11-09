@@ -37,12 +37,8 @@ end
 
 function parse_assign!(ops, info, vals, expr::Symbol)
     @assert vals.head == :tuple "Do not know how to handle $(vals.head) on $vals"
-    func = "fanout"
-    if length(vals.args) <= 12
-        func *= string(length(vals.args))
-    end
     outputs = [vals.args...]
-    push!(ops, Op(func, [expr], outputs, [], info))
+    push!(ops, Op(:fanout, [expr], outputs, [], info))
     outputs
 end
 
