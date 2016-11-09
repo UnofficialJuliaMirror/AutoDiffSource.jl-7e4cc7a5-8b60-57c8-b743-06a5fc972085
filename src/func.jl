@@ -80,20 +80,15 @@
 δfanout(x) = (x..., (z...) -> [z...])
 
 macro fanouts(n)
-    name = Symbol("∇fanout$n")
-    nabla = :(function $name(); []; end)
-    name = Symbol("δfanout$n")
-    delta = :(function $name(x); (); end)
-
+    delta = :(function $(Symbol("δfanout$n"))(x); (); end)
+    nabla = :(function $(Symbol("∇fanout$n"))(); []; end)
     for k = 1:n
         push!(nabla.args[1].args, :($(Symbol("x$k"))))
         push!(nabla.args[2].args[2].args, :($(Symbol("x$k"))))
         push!(delta.args[2].args[2].args, :(x[$k]))
     end
     push!(delta.args[2].args[2].args, nabla)
-    esc(delta)
+    delta
 end
 
-for k in 2:12
-    @eval @fanouts $k
-end
+[@eval @fanouts $k for k in 2:12]
