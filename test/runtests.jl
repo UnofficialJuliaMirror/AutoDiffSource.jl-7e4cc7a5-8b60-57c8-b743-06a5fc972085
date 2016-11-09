@@ -13,7 +13,7 @@ end
 
 # check basic use
 @δ f(x, y) = (x + y) * y
-@test checkdiff_inferred(f, δf, 2., 3.)
+@test checkdiff(f, δf, 2., 3.)
 
 # check numerical constants
 @δ function f2(x, y::AbstractFloat)
