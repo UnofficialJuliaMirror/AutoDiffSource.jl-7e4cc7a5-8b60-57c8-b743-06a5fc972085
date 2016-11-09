@@ -24,9 +24,12 @@ function δ(ops)
         push!(nablas, nabla)
         name = Symbol("δ" * name)
         temp = gensym(name)
+        # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
+        # work around for https://github.com/JuliaLang/julia/issues/15276
         push!(body, :($temp = $name($(line.inputs...))))
         [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
         push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
+        # end work around
     end
     push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
