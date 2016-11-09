@@ -1,5 +1,5 @@
 macro δ(expr)
-    esc(:( $expr; $(δ(parse_function(expr); ))))
+    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
 end
 
 isvar(n::Number) = false
