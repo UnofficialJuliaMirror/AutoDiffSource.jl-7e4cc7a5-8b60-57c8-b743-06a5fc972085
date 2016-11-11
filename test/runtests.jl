@@ -42,7 +42,7 @@ const f6_const = rand(5)
 # test ...
 @δ function f7(x...)
     a, b = x
-    a * b
+    return a * b
 end
 @test checkdiff_inferred(f7, δf7, rand(2)...)
 
