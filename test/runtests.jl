@@ -82,7 +82,7 @@ for o in [:+, :-, :*, :/, :^]
 end
 
 # (scalar)
-for o in [:abs, :sum, :sqrt, :exp, :log, :-]
+for o in [:abs, :sum, :sqrt, :exp, :log, :-, :sign]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = $o(x)
@@ -124,7 +124,7 @@ for o in [:.+, :.-, :.*, :./, :.^]
 end
 
 # (vector), (matrix)
-for o in [:abs, :sqrt, :exp, :log]
+for o in [:abs, :sqrt, :exp, :log, :sign]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = sum($o.(x))

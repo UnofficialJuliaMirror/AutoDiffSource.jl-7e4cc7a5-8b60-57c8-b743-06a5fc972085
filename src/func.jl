@@ -42,6 +42,8 @@
 δdotpower_2(x, y) = (t = x.^y; (t, z->z.*y.*t./x))
 δdotpower{T}(x::T, y::T) = (t = x.^y; (t, z->(z.*y.*t./x, z.*t.*log.(x))))
 
+δdotsign(x::AbstractArray) = (sign.(x), y->zeros(y))
+
 δdotsqrt(x) = (t = sqrt.(x); (t, z->0.5*z./t))
 
 δdottimes(x::AbstractArray, y::AbstractFloat) = (x.*y, z->(z.*y, sum(z.*x)))
@@ -74,6 +76,8 @@
 δpower_2(x, y) = (t = x^y; (t, z->z*y*t/x))
 
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
+
+δsign(x::AbstractFloat) = (sign(x), y->0.)
 
 δsum(x) = (t = size(x); (sum(x), z->fill(z, t)))
 δsum(x::AbstractFloat) = (x, z->z)
