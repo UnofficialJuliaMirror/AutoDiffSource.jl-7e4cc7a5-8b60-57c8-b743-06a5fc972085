@@ -5,13 +5,13 @@ using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 using PyPlot # if not installed try Pkg.add("PyPlot")
 
 @δ sigmoid(x) = 1 ./ (1 + exp.(-x))
-@δ function autoencoder(We1, We2 , Wd, b1, b2,  input)
+@δ function autoencoder(We1, We2, Wd, b1, b2, input)
     firstLayer = sigmoid(We1 * input + b1)
     encodedInput = sigmoid(We2 * firstLayer + b2)
     reconstructedInput = sigmoid(Wd * encodedInput)
 end
-@δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
-    reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
+@δ function autoencoderError(We1, We2, Wd, b1, b2, input)
+    reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
     return sum((input - reconstructedInput).^2)
 end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
@@ -30,7 +30,7 @@ function show_digits(testing, We1, We2, b1, b2, Wd)
     total_error = 0
     for l = 1:12
         input = testing[:, rand(1:size(testing, 2))]
-        reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
+        reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
         subplot(4, 6, l*2-1)
         title("input")
         pcolor(rotl90(reshape(input, 28, 28)'); cmap="Greys")
