@@ -36,7 +36,7 @@ end
 
 # test external constants
 const f6_const = rand(5)
-@δ f6(x) = sum(f6_const .* x)
+@δ f6(x) = sum(f6_const .* x.^2)
 @test checkdiff_inferred(f6, δf6, rand(5))
 
 # test ...

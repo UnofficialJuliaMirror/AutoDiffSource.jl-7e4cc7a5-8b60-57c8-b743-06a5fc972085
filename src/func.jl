@@ -43,7 +43,7 @@ safediv(x, y) = y == 0 ? 0. : x / y
 δdot_power(x::AbstractMatrix, y::AbstractVector) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), sum(z.*t.*log.(x), 2))))
 δdot_power(x::AbstractVector, y::AbstractMatrix) = (t = x.^y; (t, z->(sum(safediv.(z.*y.*t, x), 2), z.*t.*log.(x))))
 δdot_power_1(x, y) = (t = x.^y; (t, z->z.*t.*log(x)))
-δdot_power_2(x, y) = (t = x.^y; (t, z->safediv.(z.*y.*t, x)))
+δdot_power_2(x, y) = (t = x.^y; (t, z-> y == 2 ? z.*2x : safediv.(z.*y.*t, x)))
 δdot_power{T}(x::T, y::T) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), z.*t.*log.(x))))
 
 δdot_sign(x::AbstractArray) = (sign.(x), y->zeros(y))
