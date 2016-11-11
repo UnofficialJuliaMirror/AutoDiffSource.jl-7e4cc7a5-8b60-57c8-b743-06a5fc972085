@@ -4,10 +4,7 @@ using MNIST # if not installed try Pkg.add("MNIST")
 using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 using PyPlot # if not installed try Pkg.add("PyPlot")
 
-@δ function sigmoid(x)
-    t = exp.(-x)
-    1 ./ (1 + t)
-end
+@δ sigmoid(x) = 1 ./ (1 + exp.(-x))
 @δ sum_sigmoid(x) = sum(sigmoid(x))
 @assert checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
 
@@ -19,7 +16,7 @@ end
 
 @δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
     reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
-    sum((input .- reconstructedInput).^2)
+    return sum((input .- reconstructedInput).^2)
 end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
