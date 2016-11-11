@@ -34,7 +34,7 @@ Functions can be nested and corresponding ```δ``` functions are found by conven
 end
 ```
 
-To calculate the value and get a closure to calculate the gradient just call a δ function:
+To calculate the value and get a closure function for the gradient:
 ```
 z, t, ∇f2 = δf2(x, y)
 ```
