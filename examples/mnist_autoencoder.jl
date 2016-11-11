@@ -2,6 +2,7 @@
 
 using MNIST # if not installed try Pkg.add("MNIST")
 using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
+using PyPlot # if not installed try Pkg.add("PyPlot")
 
 @δ function sigmoid(x)
     t = exp.(-x)
@@ -10,10 +11,14 @@ end
 @δ sum_sigmoid(x) = sum(sigmoid(x))
 @assert checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
 
-@δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
+@δ function autoencoder(We1, We2 , Wd, b1, b2,  input)
     firstLayer = sigmoid(We1 * input .+ b1)
     encodedInput = sigmoid(We2 * firstLayer .+ b2)
     reconstructedInput = sigmoid(Wd * encodedInput)
+end
+
+@δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
+    reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
     sum((input .- reconstructedInput).^2)
 end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
@@ -31,11 +36,20 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
     for k in 1:epochs
         total_error = 0.
         for i in 1:size(inputData,2)
-            input = A[:,i]
+            input = inputData[:,i]
             val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
             total_error += val
             if mod(i, 1000) == 0
                 @printf("epoch=%d iter=%d error=%f\n", k, i, total_error)
+                input = inputData[:, rand(1:size(inputData, 2))]
+                reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
+                clf()
+                subplot(211)
+                title("input")
+                pcolor(reshape(input, 28, 28); cmap="Greys")
+                subplot(212)
+                title("reconstructed")
+                pcolor(reshape(reconstructedInput, 28, 28); cmap="Greys")
                 total_error = 0.
             end
             ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
