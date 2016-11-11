@@ -38,11 +38,11 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
                 @printf("epoch=%d iter=%d error=%f\n", k, i, total_error)
                 total_error = 0.
             end
-            ∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
+            ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
             We1 = We1 - alpha * ∂We1
-            b1 = b1 - alpha * ∂B1
+            b1 = b1 - alpha * ∂b1
             We2 = We2 - alpha * ∂We2
-            b2 = b2 - alpha * ∂B2
+            b2 = b2 - alpha * ∂b2
             Wd = Wd - alpha * ∂Wd
         end
     end
