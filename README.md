@@ -74,7 +74,7 @@ end
     sum((input .- reconstructedInput).^2)
 end
 value, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
-∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
+∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
 ```
 
 ### Comparison to similar efforts
