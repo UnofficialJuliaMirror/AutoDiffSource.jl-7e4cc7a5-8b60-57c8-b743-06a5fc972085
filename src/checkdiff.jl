@@ -29,8 +29,7 @@ function checkgrad(f, x, ∂x, h = 1e-8)
                 y2 = f(x2...)
                 isapprox(2h * ∂xₖ[l], y2-y1, atol=h) || error("gradient for argument #$k element $l doesn't match")
             end
-        else
-            error("not supported argument #$k type: $(typeof(x[k]))")
+        else error("not supported argument #$k type: $(typeof(x[k]))")
         end
     end
     true

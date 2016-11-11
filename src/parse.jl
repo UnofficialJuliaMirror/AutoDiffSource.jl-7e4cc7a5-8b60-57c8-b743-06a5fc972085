@@ -30,8 +30,7 @@ function parse_function(expr)
             outputs = [parse_arg!(ops, info, arg) for arg in line.args[1].args]
         elseif line.head == :line
             info = line
-        else
-            error("Do not know how to handle $(line.head) on $line")
+        else error("Do not know how to handle $(line.head) on $line")
         end
     end
     Op(name, inputs, outputs, ops, info)
