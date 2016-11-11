@@ -61,7 +61,23 @@ const c = rand(10)
 @δ f4(x) = sum(c .* x)
 ```
 
+[Example](https://github.com/gaika/AutoDiffSource.jl/blob/master/examples/mnist_autoencoder.jl) of training an [autoencoder NN](http://int8.io/automatic-differentiation-machine-learning-julia/):
+```
+@δ function sigmoid(x)
+    t = exp.(-x)
+    1 ./ (1 + t)
+end
+@δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
+    firstLayer = sigmoid(We1 * input .+ b1)
+    encodedInput = sigmoid(We2 * firstLayer .+ b2)
+    reconstructedInput = sigmoid(Wd * encodedInput)
+    sum((input .- reconstructedInput).^2)
+end
+value, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
+∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
+```
+
 ### Comparison to similar efforts
 
-https://github.com/JuliaDiff/ReverseDiffSource.jl is pretty close and has more features. This one is faster, easier to use, and supports functions with multiple return values. Since forward and backward passes are separate it can differentiate nested functions or be plugged in to your own gradient learning code.
+[ReverseDiffSource](https://github.com/JuliaDiff/ReverseDiffSource.jl) is pretty close and has more features. This one is faster, easier to use, and supports functions with multiple return values. Since forward and backward passes are separate it can differentiate nested functions or be plugged in to your own gradient learning code.
 
