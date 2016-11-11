@@ -53,6 +53,12 @@ function parse_expr!(ops, info, expr::Expr)
     @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $(expr.head) on $expr"
     if expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
+        while length(args) > 2 && (expr.args[1] == :(+) || expr.args[1] == :(*))
+            a = shift!(args)
+            arg = Symbol("tmp$(length(ops)+1)")
+            push!(ops, Op(opname(expr.args[1]), [a, args[1]], [arg], [], info))
+            args[1] = arg
+        end
         opname(expr.args[1]), args
     else
         @assert expr.args[2].head == :tuple
