@@ -61,7 +61,7 @@ const c = rand(10)
 @δ f4(x) = sum(c .* x)
 ```
 
-[Example](https://github.com/gaika/AutoDiffSource.jl/blob/master/examples/mnist_autoencoder.jl) of training an [autoencoder NN](http://int8.io/automatic-differentiation-machine-learning-julia/):
+[Example](https://github.com/gaika/AutoDiffSource.jl/blob/master/examples/mnist_autoencoder.jl) from training an [autoencoder NN](http://int8.io/automatic-differentiation-machine-learning-julia/):
 ```
 @δ function sigmoid(x)
     t = exp.(-x)
