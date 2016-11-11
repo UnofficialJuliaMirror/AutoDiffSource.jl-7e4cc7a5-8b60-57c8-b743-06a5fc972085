@@ -36,13 +36,15 @@
 δdot_plus_2(x, y) = (x.+y, z->z)
 δdot_plus{T}(x::T, y::T) = (x.+y, z->(z, z))
 
-δdot_power(x::AbstractArray, y::AbstractFloat) = (t = x.^y; (t, z->(z.*y.*t./x, sum(z.*t.*log.(x)))))
-δdot_power(x::AbstractFloat, y::AbstractArray) = (t = x.^y; (t, z->(sum(z.*y.*t)/x, z.*t.*log.(x))))
-δdot_power(x::AbstractMatrix, y::AbstractVector) = (t = x.^y; (t, z->(z.*y.*t./x, sum(z.*t.*log.(x), 2))))
-δdot_power(x::AbstractVector, y::AbstractMatrix) = (t = x.^y; (t, z->(sum(z.*y.*t./x, 2), z.*t.*log.(x))))
+safediv(x, y) = y == 0 ? 0. : x / y
+
+δdot_power(x::AbstractArray, y::AbstractFloat) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), sum(z.*t.*log.(x)))))
+δdot_power(x::AbstractFloat, y::AbstractArray) = (t = x.^y; (t, z->(safediv(sum(z.*y.*t), x), z.*t.*log.(x))))
+δdot_power(x::AbstractMatrix, y::AbstractVector) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), sum(z.*t.*log.(x), 2))))
+δdot_power(x::AbstractVector, y::AbstractMatrix) = (t = x.^y; (t, z->(sum(safediv.(z.*y.*t, x), 2), z.*t.*log.(x))))
 δdot_power_1(x, y) = (t = x.^y; (t, z->z.*t.*log(x)))
-δdot_power_2(x, y) = (t = x.^y; (t, z->z.*y.*t./x))
-δdot_power{T}(x::T, y::T) = (t = x.^y; (t, z->(z.*y.*t./x, z.*t.*log.(x))))
+δdot_power_2(x, y) = (t = x.^y; (t, z->safediv.(z.*y.*t, x)))
+δdot_power{T}(x::T, y::T) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), z.*t.*log.(x))))
 
 δdot_sign(x::AbstractArray) = (sign.(x), y->zeros(y))
 
@@ -73,9 +75,9 @@
 δplus_2(x, y) = (x+y, z->z)
 δplus{T}(x::T, y::T) = (x+y, z->(z, z))
 
-δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(z*y*t/x, z*t*log(x))))
+δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(safediv(z*y*t, x), z*t*log(x))))
 δpower_1(x, y) = (t = x^y; (t, z->z*t*log(x)))
-δpower_2(x, y) = (t = x^y; (t, z->z*y*t/x))
+δpower_2(x, y) = (t = x^y; (t, z->safediv(z*y*t, x)))
 
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
 
