@@ -28,8 +28,8 @@
 δminus(x::AbstractArray, y::AbstractFloat) = (x-y, z->(z, -sum(z)))
 δtimes(x::AbstractFloat, y::AbstractArray) = (x*y, z->(sum(z.*y), z.*x))
 δtimes(x::AbstractArray, y::AbstractFloat) = (x*y, z->(z.*y, sum(z.*x)))
-δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t./y))))
 δtimes(x::AbstractArray, y::AbstractArray) = (x*y, z->(z*y', x'*z))
+δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t./y))))
 
 δdotplus(x::AbstractVector, y::AbstractMatrix) = (x.+y, z->(sum(z, 2), z))
 δdotplus(x::AbstractMatrix, y::AbstractVector) = (x.+y, z->(z, sum(z, 2)))
