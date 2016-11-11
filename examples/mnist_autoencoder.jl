@@ -29,10 +29,11 @@ function initializeNetworkParams(inputSize, layer1Size, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
 
-function show_digits(inputData, We1, We2, b1, b2, Wd)
+function show_digits(testing, We1, We2, b1, b2, Wd)
     clf()
+    total_error = 0
     for l = 1:12
-        input = inputData[:, rand(1:size(inputData, 2))]
+        input = testing[:, rand(1:size(testing, 2))]
         reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
         subplot(4, 6, l*2-1)
         title("input")
@@ -40,20 +41,22 @@ function show_digits(inputData, We1, We2, b1, b2, Wd)
         subplot(4, 6, l*2)
         title("reconstructed")
         pcolor(rotl90(reshape(reconstructedInput, 28, 28)'); cmap="Greys")
+        total_error += sum((input .- reconstructedInput).^2)
     end
+    total_error
 end
 
-function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
+function trainAutoencoder(epochs, training, testing, We1, We2, b1, b2, Wd, alpha)
     for k in 1:epochs
         total_error = 0.
-        for i in 1:size(inputData,2)
-            input = inputData[:,i]
+        for i in 1:size(training, 2)
+            input = training[:,i]
             val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
             total_error += val
             if mod(i, 1000) == 0
-                @printf("epoch=%d iter=%d error=%f\n", k, i, total_error)
+                test_error = show_digits(testing, We1, We2, b1, b2, Wd)
+                @printf("epoch=%d iter=%d training_error=%.2f testing_error=%.2f\n", k, i, total_error, test_error)
                 total_error = 0.
-                show_digits(inputData, We1, We2, b1, b2, Wd)
             end
             ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
             We1 -= alpha * ∂We1
@@ -67,14 +70,15 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
 end
 
 # read input MNIST data
-A = MNIST.traindata()[1] ./ 255
+training = MNIST.traindata()[1] / 255
+testing = MNIST.testdata()[1] / 255
 
 # 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
 We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100)
 
 # 4 epochs with alpha = 0.02
-@time We1, We2, b1, b2, Wd = trainAutoencoder(4, A,  We1, We2, b1, b2, Wd, 0.02)
+@time We1, We2, b1, b2, Wd = trainAutoencoder(4, training, testing, We1, We2, b1, b2, Wd, 0.02)
 
 for k = 1:10
-    show_digits(A, We1, We2, b1, b2, Wd)
+    show_digits(testing, We1, We2, b1, b2, Wd)
 end
