@@ -26,8 +26,8 @@ function initializeNetworkParams(inputSize, layer1Size, layer2Size, initThetaDis
     return (We1, We2, b1, b2, Wd)
 end
 
-A = readInputData() # read input MNIST data
-input = A[:,1] # single input example is needed for AD routine
+# read input MNIST data
+A = readInputData()
 
 # 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
 We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1))
