@@ -61,6 +61,10 @@ end
 @test checkdiff_inferred(f9, δf9, rand(3, 3), rand(3))
 @test checkdiff_inferred(f9, δf9, rand(3, 3), rand(3, 3))
 
+# test sequence of plus and times
+@δ f10(x, y, z) = (x + y + z) * x * y * z
+@test checkdiff_inferred(f10, δf10, rand(), rand(), rand())
+
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^]
     t = gensym(o)
