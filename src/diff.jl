@@ -42,7 +42,7 @@ function ∇(ops, nablas)
     inputs = map(topartial, ops.outputs)
     func = :(function $name($(inputs...)); end)
     if length(inputs) == 1
-        func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1.0)
+        func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1f0)
     end
     body = func.args[2].args
     empty!(body)
