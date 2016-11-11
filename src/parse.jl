@@ -24,8 +24,10 @@ function parse_function(expr)
             outputs = parse_assign!(ops, info, line.args...)
         elseif line.head == :call || line.head == :(.)
             outputs = [parse_arg!(ops, info, line)]
-        elseif line.head == :tuple || line.head == :return
+        elseif line.head == :tuple || line.head == :return && line.args[1].head != :tuple
             outputs = [parse_arg!(ops, info, arg) for arg in line.args]
+        elseif line.head == :return && line.args[1].head == :tuple
+            outputs = [parse_arg!(ops, info, arg) for arg in line.args[1].args]
         elseif line.head == :line
             info = line
         else

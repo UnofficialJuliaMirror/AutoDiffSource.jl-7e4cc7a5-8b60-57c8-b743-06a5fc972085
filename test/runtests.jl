@@ -65,6 +65,18 @@ end
 @δ f10(x, y, z) = (x + y + z) * x * y * z
 @test checkdiff_inferred(f10, δf10, rand(), rand(), rand())
 
+# test multiple return values
+@δ f11(x, y) = (x*y, y/x)
+@δ function f12(x, y)
+    return x+y, y-x
+end
+@δ function f13(x, y)
+    a, b = f11(x, y)
+    c, d = f12(x, y)
+    return a+b+c+d
+end
+@test checkdiff_inferred(f13, δf13, rand(), rand())
+
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)
