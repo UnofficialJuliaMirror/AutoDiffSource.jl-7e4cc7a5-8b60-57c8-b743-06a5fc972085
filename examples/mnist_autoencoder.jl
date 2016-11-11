@@ -73,4 +73,8 @@ A = MNIST.traindata()[1] ./ 255
 We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100)
 
 # 4 epochs with alpha = 0.02
-@time We1, We2, b1, b2, Wd = trainAutoencoder(4, A,  We1, We2, b1, b2, Wd, 0.02);
+@time We1, We2, b1, b2, Wd = trainAutoencoder(4, A,  We1, We2, b1, b2, Wd, 0.02)
+
+for k = 1:10
+    show_digits(A, We1, We2, b1, b2, Wd)
+end
