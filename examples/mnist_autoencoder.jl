@@ -32,14 +32,13 @@ function show_digits(testing, We1, We2, b1, b2, Wd)
         input = testing[:, rand(1:size(testing, 2))]
         reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
         subplot(4, 6, l*2-1)
-        title("input")
         pcolor(rotl90(reshape(input, 28, 28)'); cmap="Greys")
         subplot(4, 6, l*2)
-        title("reconstructed")
         pcolor(rotl90(reshape(reconstructedInput, 28, 28)'); cmap="Greys")
         total_error += sum((input - reconstructedInput).^2)
     end
-    total_error / 6
+    tight_layout()
+    total_error / 12
 end
 
 function trainAutoencoder(epochs, training, testing, We1, We2, b1, b2, Wd, alpha)
@@ -74,7 +73,3 @@ We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100)
 
 # 4 epochs with alpha = 0.02
 @time We1, We2, b1, b2, Wd = trainAutoencoder(4, training, testing, We1, We2, b1, b2, Wd, 0.02)
-
-for k = 1:10
-    show_digits(testing, We1, We2, b1, b2, Wd)
-end
