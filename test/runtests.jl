@@ -169,3 +169,11 @@ for o in [:/]
     @eval @test checkdiff_inferred($t, $δt, rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end
+
+for o in [:dot]
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x, y) = $o(x, y)
+    @eval @test checkdiff_inferred($t, $δt, rand(5), rand(5))
+    @eval @test checkdiff_inferred($t, $δt, rand(3, 2), rand(3, 2))
+end

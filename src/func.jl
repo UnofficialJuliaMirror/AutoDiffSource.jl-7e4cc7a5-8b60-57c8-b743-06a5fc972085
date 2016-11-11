@@ -5,6 +5,8 @@
 δdivide_1(x, y) = (t = x/y; (t, z->(-z*t/y)))
 δdivide_2(x, y) = (x/y, z->(z/y))
 
+δdot(x, y) = (dot(x, y), z->(z.*y, z.*x))
+
 δdotabs(x) = (abs.(x), z->z.*sign.(x))
 
 δdotdivide(x::AbstractArray, y::AbstractFloat) = (t = x./y; (t, z->(z./y, -sum(z.*t)/y)))
