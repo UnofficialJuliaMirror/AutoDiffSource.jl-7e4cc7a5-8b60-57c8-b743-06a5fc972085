@@ -73,6 +73,7 @@ end
     reconstructedInput = sigmoid(Wd * encodedInput)
     sum((input .- reconstructedInput).^2)
 end
+@assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 value, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
 ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
 ```
