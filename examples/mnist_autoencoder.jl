@@ -41,7 +41,7 @@ function show_digits(testing, We1, We2, b1, b2, Wd)
         subplot(4, 6, l*2)
         title("reconstructed")
         pcolor(rotl90(reshape(reconstructedInput, 28, 28)'); cmap="Greys")
-        total_error += sum((input .- reconstructedInput).^2)
+        total_error += sum((input - reconstructedInput).^2)
     end
     total_error / 6
 end
@@ -53,9 +53,9 @@ function trainAutoencoder(epochs, training, testing, We1, We2, b1, b2, Wd, alpha
             input = training[:,i]
             val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
             total_error += val
-            if mod(i, 1000) == 0
+            if mod(i, 10_000) == 0
                 test_error = show_digits(testing, We1, We2, b1, b2, Wd)
-                @printf("epoch=%d iter=%d train_error=%.2f test_error=%.2f\n", k, i, total_error/1000, test_error)
+                @printf("epoch=%d iter=%d train_error=%.2f test_error=%.2f\n", k, i, total_error/10_000, test_error)
                 total_error = 0.
             end
             ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
