@@ -82,7 +82,10 @@ for o in [:+, :-, :*, :/, :^]
 end
 
 # (scalar)
-for o in [:abs, :sum, :sqrt, :exp, :log, :-, :sign]
+for o in [:abs, :sum, :sqrt, :exp, :log, :-, :sign, :log1p, :expm1,
+          :sin, :cos, :tan, :sinh, :cosh, :tanh, :asin, :acos, :atan,
+          :round, :floor, :ceil, :trunc, :mod2pi, :maximum, :minimum, :transpose,
+          :erf, :erfc, :gamma, :lgamma]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = $o(x)
@@ -124,7 +127,10 @@ for o in [:.+, :.-, :.*, :./, :.^]
 end
 
 # (vector), (matrix)
-for o in [:abs, :sqrt, :exp, :log, :sign]
+for o in [:abs, :sqrt, :exp, :log, :sign, :log1p, :expm1,
+          :sin, :cos, :tan, :sinh, :cosh, :tanh, :asin, :acos, :atan,
+          :round, :floor, :ceil, :trunc, :mod2pi,
+          :erf, :erfc, :gamma, :lgamma]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = sum($o.(x))
@@ -176,4 +182,12 @@ for o in [:dot]
     @eval @δ $t(x, y) = $o(x, y)
     @eval @test checkdiff_inferred($t, $δt, rand(5), rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2), rand(3, 2))
+end
+
+for o in [:transpose, :maximum, :minimum]
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x) = sum($o(x))
+    @eval @test checkdiff_inferred($t, $δt, rand(5))
+    @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end

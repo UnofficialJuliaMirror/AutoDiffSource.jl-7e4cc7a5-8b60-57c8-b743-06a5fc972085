@@ -62,14 +62,14 @@ function parse_expr!(ops, info, expr::Expr)
         opname(expr.args[1]), args
     else
         @assert expr.args[2].head == :tuple
-        "dot$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+        "dot_$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     end
 end
 
 opname(name) = get(opnames, name, name)
-const opnames = Dict(:(.*) => :dottimes, :(*) => :times, :(.+) => :dotplus, :(+) => :plus,
-                     :(./) => :dotdivide, :(/) => :divide, :(.-) => :dotminus, :(-) => :minus,
-                     :(.^) => :dotpower, :(^) => :power)
+const opnames = Dict(:(.*) => :dot_times, :(*) => :times, :(.+) => :dot_plus, :(+) => :plus,
+                     :(./) => :dot_divide, :(/) => :divide, :(.-) => :dot_minus, :(-) => :minus,
+                     :(.^) => :dot_power, :(^) => :power)
 
 function parse_arg!(ops, info, arg::Expr)
     func, inputs = parse_expr!(ops, info, arg)
