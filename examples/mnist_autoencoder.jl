@@ -20,12 +20,6 @@ end
 end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
-function readInputData()
-    a,_ = MNIST.traindata()
-    A = a ./ 255
-    return A
-end
-
 function initializeNetworkParams(inputSize, layer1Size, layer2Size, initThetaDist)
     We1 =  rand(initThetaDist, layer1Size, inputSize)
     b1 = zeros(layer1Size, 1)
@@ -34,12 +28,6 @@ function initializeNetworkParams(inputSize, layer1Size, layer2Size, initThetaDis
     Wd = rand(initThetaDist, inputSize, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
-
-# read input MNIST data
-A = readInputData()
-
-# 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
-We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1))
 
 function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
     for _ in 1:epochs
@@ -60,4 +48,11 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
     return (We1, We2, b1, b2, Wd)
 end
 
+# read input MNIST data
+A = MNIST.traindata()[1] ./ 255
+
+# 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
+We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1))
+
+# 4 epochs with alpha = 0.02
 @time We1, We2, b1, b2, Wd = trainAutoencoder(4, A,  We1, We2, b1, b2, Wd, 0.02);
