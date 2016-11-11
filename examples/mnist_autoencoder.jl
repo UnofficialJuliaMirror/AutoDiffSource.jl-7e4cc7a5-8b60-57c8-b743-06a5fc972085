@@ -22,9 +22,9 @@ end
 
 function initializeNetworkParams(inputSize, layer1Size, layer2Size)
     We1 =  0.1 * randn(layer1Size, inputSize)
-    b1 = zeros(layer1Size, 1)
+    b1 = zeros(layer1Size)
     We2 =  0.1 * randn(layer2Size, layer1Size)
-    b2 = zeros(layer2Size, 1)
+    b2 = zeros(layer2Size)
     Wd = 0.1 * randn(inputSize, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
