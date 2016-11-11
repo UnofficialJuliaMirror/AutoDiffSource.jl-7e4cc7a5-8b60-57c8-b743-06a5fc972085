@@ -64,11 +64,11 @@ const c = rand(10)
 [Example](https://github.com/gaika/AutoDiffSource.jl/blob/master/examples/mnist_autoencoder.jl) from training an [autoencoder NN](http://int8.io/automatic-differentiation-machine-learning-julia/):
 ```
 @δ sigmoid(x) = 1 ./ (1 + exp.(-x))
-@δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
-    firstLayer = sigmoid(We1 * input .+ b1)
-    encodedInput = sigmoid(We2 * firstLayer .+ b2)
+@δ function autoencoderError(We1, We2, Wd, b1, b2, input)
+    firstLayer = sigmoid(We1 * input + b1)
+    encodedInput = sigmoid(We2 * firstLayer + b2)
     reconstructedInput = sigmoid(Wd * encodedInput)
-    sum((input .- reconstructedInput).^2)
+    return sum((input - reconstructedInput).^2)
 end
 @assert checkdiff(autoencoderError, δautoencoderError, 
                   randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
