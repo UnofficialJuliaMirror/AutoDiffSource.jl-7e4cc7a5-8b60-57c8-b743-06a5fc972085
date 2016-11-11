@@ -28,12 +28,14 @@ function initializeNetworkParams(inputSize, layer1Size, layer2Size)
 end
 
 function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
-    for _ in 1:epochs
+    for k in 1:epochs
+        total_error = 0.
         for i in 1:size(inputData,2)
             input = A[:,i]
-            val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input);
-            if mod(i, 100) == 0
-                @show _, i, val
+            val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
+            total_error += val
+            if mod(i, 1000) == 0
+                @printf("epoch=%d iter=%d error=%f\n", k, i, total_error / i)
             end
             ∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
             We1 = We1 - alpha * ∂We1
