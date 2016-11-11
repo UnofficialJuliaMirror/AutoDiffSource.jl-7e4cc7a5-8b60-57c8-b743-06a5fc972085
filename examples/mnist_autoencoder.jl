@@ -35,7 +35,8 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
             val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
             total_error += val
             if mod(i, 1000) == 0
-                @printf("epoch=%d iter=%d error=%f\n", k, i, total_error / i)
+                @printf("epoch=%d iter=%d error=%f\n", k, i, total_error)
+                total_error = 0.
             end
             ∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
             We1 = We1 - alpha * ∂We1
