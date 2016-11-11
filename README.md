@@ -15,7 +15,7 @@ Pkg.add("AutoDiffSource")
 using AutoDiffSource
 ```
 
-### Differentiate a function with ```@δ``` macro
+### Differentiate a function with ```@δ``` macro:
 ```
 @δ f(x, y) = (x + 2y) * y^2
 ```
@@ -28,7 +28,7 @@ z, ∇f = δf(x, y)
 
 Functions can be nested and corresponding ```δ``` functions are found by convention, multiple return values are supported too:
 ```
-@δ function ff(x, y)
+@δ function f2(x, y)
    q = f(x * y, y) * x
    q + y, q - x
 end
@@ -36,12 +36,12 @@ end
 
 To calculate the value and get a closure to calculate the gradient just call a δ function:
 ```
-z, t, ∇ff = δff(x, y)
+z, t, ∇f2 = δf2(x, y)
 ```
 
 To calculate the gradient later, once partial derivates are known, just call the closure as a regular function:
 ```
-∂x, ∂y = ∇ff(∂z, ∂t)
+∂x, ∂y = ∇f2(∂z, ∂t)
 ```
 
 You can define a function with your own gradient calculations:
@@ -52,13 +52,13 @@ div(x, y) = x / y
 
 Can be used as a building block for other functions:
 ```
-@δ fff(x, y) = div(x, y) + y
+@δ f3(x, y) = div(x, y) + y
 ```
 
 If you have external constants that you don't need to differentiate:
 ```
 const c = rand(10)
-@δ ffff(x) = sum(c .* x)
+@δ f4(x) = sum(c .* x)
 ```
 
 ### Comparison to similar efforts
