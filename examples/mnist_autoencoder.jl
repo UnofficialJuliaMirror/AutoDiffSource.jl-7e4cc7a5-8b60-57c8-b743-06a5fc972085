@@ -5,15 +5,11 @@ using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 using PyPlot # if not installed try Pkg.add("PyPlot")
 
 @δ sigmoid(x) = 1 ./ (1 + exp.(-x))
-@δ sum_sigmoid(x) = sum(sigmoid(x))
-@assert checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
-
 @δ function autoencoder(We1, We2 , Wd, b1, b2,  input)
     firstLayer = sigmoid(We1 * input + b1)
     encodedInput = sigmoid(We2 * firstLayer + b2)
     reconstructedInput = sigmoid(Wd * encodedInput)
 end
-
 @δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
     reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
     return sum((input - reconstructedInput).^2)
