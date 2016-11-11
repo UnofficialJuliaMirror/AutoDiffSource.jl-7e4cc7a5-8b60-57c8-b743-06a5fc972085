@@ -10,7 +10,7 @@ using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 end
 
 @δ sum_sigmoid(x) = sum(sigmoid(x))
-checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
+@assert checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
 
 @δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
     firstLayer = sigmoid(We1 * input .+ b1)
@@ -18,7 +18,7 @@ checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
     reconstructedInput = sigmoid(Wd * encodedInput)
     sum((input .- reconstructedInput).^2)
 end
-checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
+@assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
 function readInputData()
     a,_ = MNIST.traindata()
