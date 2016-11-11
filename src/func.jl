@@ -155,3 +155,19 @@
 
 δlgamma(x) = (lgamma(x), y->y*polygamma(0,x))
 δdot_lgamma(x) = (lgamma.(x), y->y.*polygamma.(0,x))
+
+δmin(x, y) = (min(x, y), z->(z*(x<y),z*(x>y)))
+δmin_2(x, y) = (min(x, y), z->z*(x<y))
+δmin_1(x, y) = (min(x, y), z->z*(x>y))
+
+δmax(x, y) = (max(x, y), z->(z*(x>y),z*(x<y)))
+δmax_2(x, y) = (max(x, y), z->z*(x>y))
+δmax_1(x, y) = (max(x, y), z->z*(x<y))
+
+δdot_min{T}(x::T, y::T) = (min.(x, y), z->(z.*(x.<y),z.*(x.>y)))
+δdot_min_2(x, y) = (min.(x, y), z->z.*(x.<y))
+δdot_min_1(x, y) = (min.(x, y), z->z.*(x.>y))
+
+δdot_max{T}(x::T, y::T) = (max.(x, y), z->(z.*(x.>y),z.*(x.<y)))
+δdot_max_2(x, y) = (max.(x, y), z->z.*(x.>y))
+δdot_max_1(x, y) = (max.(x, y), z->z.*(x.<y))

@@ -13,11 +13,11 @@ export δfanout
 
 export δlog1p, δexpm1, δsin, δcos, δtan, δsinh, δcosh, δtanh, δasin, δacos, δatan
 export δround, δfloor, δceil, δtrunc, δmod2pi, δmaximum, δminimum, δtranspose
-export δerf, δerfc, δgamma, δlgamma
+export δerf, δerfc, δgamma, δlgamma, δmin, δmax, δmin_1, δmax_1, δmin_2, δmax_2
 
 export δdot_log1p, δdot_expm1, δdot_sin, δdot_cos, δdot_tan, δdot_sinh, δdot_cosh, δdot_tanh, δdot_asin, δdot_acos, δdot_atan
 export δdot_round, δdot_floor, δdot_ceil, δdot_trunc, δdot_mod2pi, δdot_transpose
-export δdot_erf, δdot_erfc, δdot_gamma, δdot_lgamma
+export δdot_erf, δdot_erfc, δdot_gamma, δdot_lgamma, δdot_min, δdot_max, δdot_min_1, δdot_max_1, δdot_min_2, δdot_max_2
 
 include("parse.jl")
 include("diff.jl")

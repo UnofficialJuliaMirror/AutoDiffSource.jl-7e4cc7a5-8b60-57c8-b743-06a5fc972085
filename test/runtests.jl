@@ -66,7 +66,7 @@ end
 @test checkdiff_inferred(f10, δf10, rand(), rand(), rand())
 
 # (scalar, scalar), (scalar, const), (const, scalar)
-for o in [:+, :-, :*, :/, :^]
+for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x, y) = $o(x, y)
@@ -188,6 +188,28 @@ for o in [:transpose, :maximum, :minimum]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = sum($o(x))
+    @eval @test checkdiff_inferred($t, $δt, rand(5))
+    @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
+end
+
+# (vector, vector), (matrix, matrix), (const, *), (*, const)
+for o in [:min, :max]
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x, y) = sum($o.(x, y))
+    @eval @test checkdiff_inferred($t, $δt, rand(3, 2), rand(3, 2))
+
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x) = sum($o.(x, 3.))
+    @eval @test checkdiff_inferred($t, $δt, rand())
+    @eval @test checkdiff_inferred($t, $δt, rand(5))
+    @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
+
+    t = gensym(o)
+    δt = Symbol("δ$t")
+    @eval @δ $t(x) = sum($o.(3., x))
+    @eval @test checkdiff_inferred($t, $δt, rand())
     @eval @test checkdiff_inferred($t, $δt, rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end
