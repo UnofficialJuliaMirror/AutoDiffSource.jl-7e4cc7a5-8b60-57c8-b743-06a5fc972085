@@ -29,6 +29,20 @@ function initializeNetworkParams(inputSize, layer1Size, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
 
+function show_digits(inputData, We1, We2, b1, b2, Wd)
+    clf()
+    for l = 1:12
+        input = inputData[:, rand(1:size(inputData, 2))]
+        reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
+        subplot(4, 6, l*2-1)
+        title("input")
+        pcolor(rotl90(reshape(input, 28, 28)'); cmap="Greys")
+        subplot(4, 6, l*2)
+        title("reconstructed")
+        pcolor(rotl90(reshape(reconstructedInput, 28, 28)'); cmap="Greys")
+    end
+end
+
 function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
     for k in 1:epochs
         total_error = 0.
@@ -38,18 +52,8 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
             total_error += val
             if mod(i, 1000) == 0
                 @printf("epoch=%d iter=%d error=%f\n", k, i, total_error)
-                clf()
-                for l = 1:12
-                    input = inputData[:, rand(1:size(inputData, 2))]
-                    reconstructedInput = autoencoder(We1, We2 , Wd, b1, b2,  input)
-                    subplot(4, 6, l*2-1)
-                    title("input")
-                    pcolor(rotl90(reshape(input, 28, 28)'); cmap="Greys")
-                    subplot(4, 6, l*2)
-                    title("reconstructed")
-                    pcolor(rotl90(reshape(reconstructedInput, 28, 28)'); cmap="Greys")
-                    total_error = 0.
-                end
+                total_error = 0.
+                show_digits(inputData, We1, We2, b1, b2, Wd)
             end
             ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
             We1 -= alpha * ∂We1
