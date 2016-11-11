@@ -1,7 +1,7 @@
 # based on http://int8.io/automatic-differentiation-machine-learning-julia/
 
-using MNIST; # if not installed try Pkg.add("MNIST")
-using Distributions; # if not installed try Pkg.add("Distributions")
+using MNIST # if not installed try Pkg.add("MNIST")
+using Distributions # if not installed try Pkg.add("Distributions")
 using AutoDiffSource
 
 @δ function autoencoderError(We1, We2 , Wd, b1, b2,  input)
@@ -12,22 +12,25 @@ using AutoDiffSource
 end
 
 function readInputData()
-    a,_ = MNIST.traindata();
-    A = a ./ 255;
-    return A;
+    a,_ = MNIST.traindata()
+    A = a ./ 255
+    return A
 end
 
 function initializeNetworkParams(inputSize, layer1Size, layer2Size, initThetaDist)
-    We1 =  rand(initThetaDist, layer1Size, inputSize); b1 = zeros(layer1Size, 1);
-    We2 =  rand(initThetaDist, layer2Size, layer1Size); b2 = zeros(layer2Size, 1);
-    Wd = rand(initThetaDist, inputSize, layer2Size);
-    return (We1, We2, b1, b2, Wd);
+    We1 =  rand(initThetaDist, layer1Size, inputSize)
+    b1 = zeros(layer1Size, 1)
+    We2 =  rand(initThetaDist, layer2Size, layer1Size)
+    b2 = zeros(layer2Size, 1)
+    Wd = rand(initThetaDist, inputSize, layer2Size)
+    return (We1, We2, b1, b2, Wd)
 end
 
-A = readInputData(); # read input MNIST data
-input = A[:,1]; # single input example is needed for AD routine
-We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1)); # 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
+A = readInputData() # read input MNIST data
+input = A[:,1] # single input example is needed for AD routine
 
+# 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
+We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1))
 
 function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
     for _ in 1:epochs
@@ -37,10 +40,12 @@ function trainAutoencoder(epochs, inputData, We1, We2, b1, b2, Wd, alpha)
             if mod(i, 100) == 0
                 @show _, i, val
             end
-            partialWe1, partialWe2, partialWd, partialB1, partialB2 = ∇autoencoderError();
-            We1 = We1 - alpha * partialWe1; b1 = b1 - alpha * partialB1;
-            We2 = We2 - alpha * partialWe2; b2 = b2 - alpha * partialB2;
-            Wd = Wd - alpha * partialWd;
+            ∂We1, ∂We2, ∂Wd, ∂B1, ∂B2 = ∇autoencoderError()
+            We1 = We1 - alpha * ∂We1
+            b1 = b1 - alpha * ∂B1
+            We2 = We2 - alpha * ∂We2
+            b2 = b2 - alpha * ∂B2
+            Wd = Wd - alpha * ∂Wd
         end
     end
     return (We1, We2, b1, b2, Wd)
