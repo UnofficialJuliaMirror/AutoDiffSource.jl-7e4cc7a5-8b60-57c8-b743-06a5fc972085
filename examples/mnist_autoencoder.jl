@@ -1,14 +1,12 @@
 # based on http://int8.io/automatic-differentiation-machine-learning-julia/
 
 using MNIST # if not installed try Pkg.add("MNIST")
-using Distributions # if not installed try Pkg.add("Distributions")
 using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 
 @δ function sigmoid(x)
     t = exp.(-x)
     1 ./ (1 + t)
 end
-
 @δ sum_sigmoid(x) = sum(sigmoid(x))
 @assert checkdiff(sum_sigmoid, δsum_sigmoid, randn(10))
 
@@ -20,12 +18,12 @@ end
 end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
-function initializeNetworkParams(inputSize, layer1Size, layer2Size, initThetaDist)
-    We1 =  rand(initThetaDist, layer1Size, inputSize)
+function initializeNetworkParams(inputSize, layer1Size, layer2Size)
+    We1 =  0.1 * randn(layer1Size, inputSize)
     b1 = zeros(layer1Size, 1)
-    We2 =  rand(initThetaDist, layer2Size, layer1Size)
+    We2 =  0.1 * randn(layer2Size, layer1Size)
     b2 = zeros(layer2Size, 1)
-    Wd = rand(initThetaDist, inputSize, layer2Size)
+    Wd = 0.1 * randn(inputSize, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
 
@@ -52,7 +50,7 @@ end
 A = MNIST.traindata()[1] ./ 255
 
 # 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
-We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100, Normal(0, .1))
+We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100)
 
 # 4 epochs with alpha = 0.02
 @time We1, We2, b1, b2, Wd = trainAutoencoder(4, A,  We1, We2, b1, b2, Wd, 0.02);
