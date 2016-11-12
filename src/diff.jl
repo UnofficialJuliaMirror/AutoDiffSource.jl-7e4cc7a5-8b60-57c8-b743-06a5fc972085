@@ -19,7 +19,7 @@ end
 isconst(line::Op) = isconst(line.name) || all(isconst, line.outputs)
 
 function δ(ops)
-    funcname = Symbol("δ" * name_of(ops))
+    funcname = Symbol("δ$(ops.name)")
     func = :(function $funcname($(ops.inputs...)); end)
     body = func.args[2].args
     empty!(body)
