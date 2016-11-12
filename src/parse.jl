@@ -4,21 +4,7 @@ type Op
     outputs::Vector
     body::Vector
     info::Expr
-    function Op(name, inputs, outputs, body, info)
-        if all(isconst, inputs)
-            map!(z->Symbol("const_$z"), outputs)
-        else
-            name = opname(name)
-        end
-        new(name, inputs, outputs, body, info)
-    end
 end
-
-isvar(n::Number) = false
-isvar(n::Symbol) =  !startswith(string(n), "const_")
-isvar(n::Expr) = n.head == :(::) || n.head == :(...) ? isvar(n.args[1]) : false
-isconst(n) = !isvar(n)
-
 
 function parse_function(expr)
     @assert (expr.head == :function || expr.head == :(=)) && length(expr.args) == 2  "Only functions can be differentiated"
@@ -71,10 +57,10 @@ function parse_expr!(ops, info, expr::Expr)
         while length(args) > 2 && (expr.args[1] == :(+) || expr.args[1] == :(*))
             a = shift!(args)
             arg = Symbol("tmp$(length(ops)+1)")
-            push!(ops, Op(expr.args[1], [a, args[1]], [arg], [], info))
-            args[1] = ops[end].outputs[1]
+            push!(ops, Op(opname(expr.args[1]), [a, args[1]], [arg], [], info))
+            args[1] = arg
         end
-        expr.args[1], args
+        opname(expr.args[1]), args
     else
         @assert expr.args[2].head == :tuple
         "dot_$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
@@ -90,7 +76,7 @@ function parse_arg!(ops, info, arg::Expr)
     func, inputs = parse_expr!(ops, info, arg)
     arg = Symbol("tmp$(length(ops)+1)")
     push!(ops, Op(func, inputs, [arg], [], info))
-    ops[end].outputs[1]
+    arg
 end
 
 parse_arg!(ops, info, arg::Symbol) = arg
