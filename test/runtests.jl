@@ -77,6 +77,11 @@ end
 end
 @test checkdiff_inferred(f13, δf13, rand(), rand())
 
+# test constant arguments and constants inside expressions
+@δ f14(x, const_y) = x * cos(const_y) / (1+tanh(const_y))
+@δ f15(x) = f14(x, 3.1)
+@test checkdiff_inferred(f15, δf15, rand())
+
 # (scalar, scalar), (scalar, const), (const, scalar)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)

@@ -6,38 +6,46 @@ macro delta(expr)
     esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
 end
 
-isvar(n::Number) = false
-isvar(n::Symbol) = true
+function name_of(line::Op)
+    name = string(line.name)
+    for k = eachindex(line.inputs)
+        if isconst(line.inputs[k])
+            name *= "_const$k"
+        end
+    end
+    name
+end
+
+isconst(line::Op) = isconst(line.name) || all(isconst, line.outputs)
 
 function δ(ops)
-    name = Symbol("δ$(ops.name)")
-    func = :(function $name($(ops.inputs...)); end)
+    funcname = Symbol("δ" * name_of(ops))
+    func = :(function $funcname($(ops.inputs...)); end)
     body = func.args[2].args
     empty!(body)
     nablas = []
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        name = string(line.name)
-        for k = eachindex(line.inputs)
-            if !isvar(line.inputs[k])
-                name *= "_const$k"
-            end
+        if isconst(line)
+            funcname = Symbol(line.name)
+            push!(body, :(($(line.outputs...)) = $funcname($(line.inputs...))))
+        else
+            name = name_of(line)
+            nabla = gensym("∇" * name)
+            push!(nablas, nabla)
+            funcname = Symbol("δ" * name)
+            temp = gensym(name)
+            # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
+            # work around for https://github.com/JuliaLang/julia/issues/15276
+            push!(body, :($temp = $funcname($(line.inputs...))))
+            [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
+            push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
+            # end work around
         end
-        nabla = gensym("∇" * name)
-        push!(nablas, nabla)
-        name = Symbol("δ" * name)
-        temp = gensym(name)
-        # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
-        # work around for https://github.com/JuliaLang/julia/issues/15276
-        push!(body, :($temp = $name($(line.inputs...))))
-        [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
-        push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
-        # end work around
     end
     push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
-    #    @show func
     func
 end
 
@@ -53,6 +61,9 @@ function ∇(ops, nablas)
     dupes = Set(inputs)
     last_info = [Expr(:line)]
     for line in reverse(ops.body)
+        if isconst(line)
+            continue
+        end
         push_if_changed!(body, last_info, line.info)
         nabla = pop!(nablas)
         ins = map(topartial, line.outputs)
@@ -61,7 +72,7 @@ function ∇(ops, nablas)
         push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
         [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
     end
-    push!(body, toexpr(map(topartial, ops.inputs)))
+    push!(body, toexpr(map(topartial, filter(isvar, ops.inputs))))
     func
 end
 
