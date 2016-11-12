@@ -17,11 +17,11 @@ end
 @assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
 function initializeNetworkParams(inputSize, layer1Size, layer2Size)
-    We1 =  0.1 * randn(layer1Size, inputSize)
-    b1 = zeros(layer1Size)
-    We2 =  0.1 * randn(layer2Size, layer1Size)
-    b2 = zeros(layer2Size)
-    Wd = 0.1 * randn(inputSize, layer2Size)
+    We1 =  1f-1 * randn(Float32, layer1Size, inputSize)
+    b1 = zeros(Float32, layer1Size)
+    We2 =  1f-1 * randn(Float32, layer2Size, layer1Size)
+    b2 = zeros(Float32, layer2Size)
+    Wd = 1f-1 * randn(Float32, inputSize, layer2Size)
     return (We1, We2, b1, b2, Wd)
 end
 
@@ -65,11 +65,11 @@ function trainAutoencoder(epochs, training, testing, We1, We2, b1, b2, Wd, alpha
 end
 
 # read input MNIST data
-training = MNIST.traindata()[1] / 255
-testing = MNIST.testdata()[1] / 255
+training = convert(Matrix{Float32}, MNIST.traindata()[1] / 255)
+testing = convert(Matrix{Float32}, MNIST.testdata()[1] / 255)
 
 # 784 -> 300 -> 100 -> 784 with weights normally distributed (with small variance)
 We1, We2, b1, b2, Wd = initializeNetworkParams(784, 300, 100)
 
 # 4 epochs with alpha = 0.02
-@time We1, We2, b1, b2, Wd = trainAutoencoder(4, training, testing, We1, We2, b1, b2, Wd, 0.02)
+@time We1, We2, b1, b2, Wd = trainAutoencoder(4, training, testing, We1, We2, b1, b2, Wd, 2f-2)
