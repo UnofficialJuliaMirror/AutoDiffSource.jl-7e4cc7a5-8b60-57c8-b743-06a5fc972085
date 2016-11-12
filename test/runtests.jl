@@ -12,7 +12,7 @@ function checkdiff_inferred(f, δf, x0...)
 end
 
 # check basic use
-@δ f(x, y) = (x + y) * y
+@delta f(x, y) = (x + y) * y
 @test checkdiff(f, δf, 2., 3.)
 
 # check numerical constants

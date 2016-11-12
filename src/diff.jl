@@ -2,6 +2,10 @@ macro δ(expr)
     esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
 end
 
+macro delta(expr)
+    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
+end
+
 isvar(n::Number) = false
 isvar(n::Symbol) = true
 
@@ -17,7 +21,7 @@ function δ(ops)
         name = string(line.name)
         for k = eachindex(line.inputs)
             if !isvar(line.inputs[k])
-                name *= "_$k"
+                name *= "_const$k"
             end
         end
         nabla = gensym("∇" * name)
