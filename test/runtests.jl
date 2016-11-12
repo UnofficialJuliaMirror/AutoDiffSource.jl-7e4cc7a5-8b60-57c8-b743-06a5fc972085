@@ -17,8 +17,9 @@ end
 
 # check numerical constants
 @δ function f2(x, y::AbstractFloat)
-    z = 2.5x - y^2
-    z / y
+    srand(1)
+    z = 2.5x - y^2 + rand()
+    z / y + randn()
 end
 @test checkdiff_inferred(f2, δf2, 2., 3.)
 

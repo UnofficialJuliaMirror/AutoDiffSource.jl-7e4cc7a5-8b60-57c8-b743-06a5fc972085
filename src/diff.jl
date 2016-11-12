@@ -57,9 +57,11 @@ function ∇(ops, nablas)
         nabla = pop!(nablas)
         ins = map(topartial, line.outputs)
         outs = map(topartial, filter(isvar, line.inputs))
-        dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
-        push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
-        [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+        if length(outs) > 0
+            dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
+            push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
+            [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+        end
     end
     push!(body, toexpr(map(topartial, ops.inputs)))
     func
