@@ -8,6 +8,7 @@ end
 
 isvar(n::Number) = false
 isvar(n::Symbol) = true
+isconst(n) = !isvar(n)
 
 function δ(ops)
     funcname = Symbol("δ$(ops.name)")
@@ -19,7 +20,7 @@ function δ(ops)
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
         constname = Symbol("δ$(line.name)_const")
-        if isdefined(constname)
+        if isdefined(constname) || all(isconst, line.inputs)
             if length(line.outputs) > 0
                 push!(body, :($(line.outputs...) = $(line.name)($(line.inputs...))))
             else

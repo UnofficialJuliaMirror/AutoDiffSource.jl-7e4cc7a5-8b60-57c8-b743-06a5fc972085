@@ -18,7 +18,7 @@ end
 # check numerical constants
 @δ function f2(x, y::AbstractFloat)
     srand(1)
-    z = 2.5x - y^2 + rand(size(x)) + randn(size(x))
+    z = 4.0*3.2*2.5x - y^2 + rand(size(x)) + randn(size(x))
     sum(z) / y + randn() + rand()
 end
 @test checkdiff_inferred(f2, δf2, rand(), rand())
@@ -80,11 +80,11 @@ end
 end
 @test checkdiff_inferred(f13, δf13, rand(), rand())
 
-# (scalar, scalar), (scalar, const), (const, scalar)
+# (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)
     δt = Symbol("δ$t")
-    @eval @δ $t(x, y) = $o(x, y)
+    @eval @δ $t(x, y) = $o(x, y) + $o(1.0, 3.0)
     @eval @test checkdiff_inferred($t, $δt, rand(), rand())
     t = gensym(o)
     δt = Symbol("δ$t")
@@ -107,12 +107,12 @@ for o in [:abs, :sum, :sqrt, :exp, :log, :-, :sign, :log1p, :expm1,
     @eval @test checkdiff_inferred($t, $δt, rand())
 end
 
-# (vector, vector), (matrix, matrix), (const, *), (*, const)
+# (vector, vector), (matrix, matrix), (const, *), (*, const), (const, const)
 # (vector, matrix), (matrix, vector), (vector, scalar), (matrix, scalar), (scalar, vector), (scalar, matrix)
 for o in [:.+, :.-, :.*, :./, :.^]
     t = gensym(o)
     δt = Symbol("δ$t")
-    @eval @δ $t(x, y) = sum($o(x, y))
+    @eval @δ $t(x, y) = sum($o(x, y)+$o(1.0, 3.0))
     @eval @test checkdiff_inferred($t, $δt, rand(5), rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2), rand(3, 2))
 

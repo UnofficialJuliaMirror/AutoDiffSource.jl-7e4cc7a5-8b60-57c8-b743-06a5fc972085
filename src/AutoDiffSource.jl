@@ -21,6 +21,8 @@ export δdot_round, δdot_floor, δdot_ceil, δdot_trunc, δdot_mod2pi, δdot_tr
 export δdot_erf, δdot_erfc, δdot_gamma, δdot_lgamma, δdot_min, δdot_max
 export δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
 
+export dot_times, times, dot_plus, plus, dot_divide, divide, dot_minus, minus, dot_power, power
+
 include("parse.jl")
 include("diff.jl")
 include("func.jl")
