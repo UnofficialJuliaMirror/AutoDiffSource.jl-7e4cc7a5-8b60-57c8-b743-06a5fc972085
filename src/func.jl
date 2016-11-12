@@ -127,7 +127,7 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δtimes_const2(x, y) = (x*y, z->(z*y'))
 δtranspose(x) = (x', y->y')
 δtrunc(x::AbstractFloat) = (trunc(x), y->0.)
-δsrand(x) = (srand(x), y->0)
-δsrand_const1(x) = (srand(x), y->())
-δrand() = (rand(), y->())
-δrandn() = (randn(), y->())
+const δsize_const = true
+const δsrand_const = true
+const δrand_const = true
+const δrandn_const = true

@@ -14,26 +14,35 @@ function δ(ops)
     func = :(function $funcname($(ops.inputs...)); end)
     body = func.args[2].args
     empty!(body)
-    nablas = []
+    nablas = Dict{Op,Symbol}()
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        name = string(line.name)
-        for k = eachindex(line.inputs)
-            if !isvar(line.inputs[k])
-                name *= "_const$k"
+        constname = Symbol("δ$(line.name)_const")
+        if isdefined(constname)
+            if length(line.outputs) > 0
+                push!(body, :($(line.outputs...) = $(line.name)($(line.inputs...))))
+            else
+                push!(body, :($(line.name)($(line.inputs...))))
             end
+        else
+            name = string(line.name)
+            for k = eachindex(line.inputs)
+                if !isvar(line.inputs[k])
+                    name *= "_const$k"
+                end
+            end
+            nabla = gensym("∇" * name)
+            nablas[line] = nabla
+            temp = gensym(name)
+            funcname = Symbol("δ" * name)
+            # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
+            # work around for https://github.com/JuliaLang/julia/issues/15276
+            push!(body, :($temp = $funcname($(line.inputs...))))
+            [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
+            push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
+            # end work around
         end
-        nabla = gensym("∇" * name)
-        push!(nablas, nabla)
-        temp = gensym(name)
-        funcname = Symbol("δ" * name)
-        # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
-        # work around for https://github.com/JuliaLang/julia/issues/15276
-        push!(body, :($temp = $funcname($(line.inputs...))))
-        [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
-        push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
-        # end work around
     end
     push!(body, ∇(ops, nablas))
     push!(body, :($(ops.outputs...), $(Symbol("∇$(ops.name)"))))
@@ -54,13 +63,15 @@ function ∇(ops, nablas)
     last_info = [Expr(:line)]
     for line in reverse(ops.body)
         push_if_changed!(body, last_info, line.info)
-        nabla = pop!(nablas)
-        ins = map(topartial, line.outputs)
-        outs = map(topartial, filter(isvar, line.inputs))
-        if length(outs) > 0
-            dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
-            push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
-            [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+        if haskey(nablas, line)
+            nabla = nablas[line]
+            ins = map(topartial, line.outputs)
+            outs = map(topartial, filter(isvar, line.inputs))
+            if length(outs) > 0
+                dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
+                push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
+                [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+            end
         end
     end
     push!(body, toexpr(map(topartial, ops.inputs)))

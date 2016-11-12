@@ -18,10 +18,12 @@ end
 # check numerical constants
 @δ function f2(x, y::AbstractFloat)
     srand(1)
-    z = 2.5x - y^2 + rand()
-    z / y + randn()
+    z = 2.5x - y^2 + rand(size(x)) + randn(size(x))
+    sum(z) / y + randn() + rand()
 end
-@test checkdiff_inferred(f2, δf2, 2., 3.)
+@test checkdiff_inferred(f2, δf2, rand(), rand())
+@test checkdiff_inferred(f2, δf2, rand(5), rand())
+@test checkdiff_inferred(f2, δf2, rand(3,3), rand())
 
 # test broadcast
 @δ f3(x) = sum(abs.(x))
