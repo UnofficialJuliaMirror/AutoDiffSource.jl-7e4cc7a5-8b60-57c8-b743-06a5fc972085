@@ -55,6 +55,18 @@ Can be used as a building block for other functions:
 @δ f3(x, y) = div(x, y) + y
 ```
 
+Simple array indexing is supported:
+```
+@δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
+@δ function rosenbrock(x)
+    l = length(x)
+    rosenbrock(x[1:l-1], x[2:l])
+end
+
+# verify correctness
+@assert checkdiff(rosenbrock, δrosenbrock, randn(3))
+```
+
 If you have function arguments that you don't need to differentiate:
 ```
 # "_constant" suffix tells that argument number 2 is a constant
