@@ -49,11 +49,13 @@ end
 @test checkdiff_inferred(f7, δf7, rand(2)...)
 
 # test ...
-@δ function f8(x...)
-    a, b, c, d, e, f, g, h, i, j, k, l, m, n = x
+const f8_const = rand(13)
+@δ function f8(a, x_const)
+    b, c, d, e, f, g, h, i, j, k, l, m, n = x_const
     a * b + c * d - e * f + g * h - i * j / k * l + m * n
 end
-@test checkdiff_inferred(f8, δf8, rand(14)...)
+@δ test_f8(x) = f8(x, f8_const)
+@test checkdiff_inferred(test_f8, δtest_f8, rand())
 
 # test matrix multiply
 @δ f9(x, y) = sum(x * y)
