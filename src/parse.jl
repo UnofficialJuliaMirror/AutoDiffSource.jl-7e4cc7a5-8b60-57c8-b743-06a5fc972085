@@ -4,6 +4,38 @@ type Op
     outputs::Vector
     body::Vector
     info::Expr
+
+    function Op(name, inputs, outputs, body, info)
+        if !isempty(body)
+            constants = Dict{Symbol, Symbol}()
+            for op in body
+                if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
+                    for o in op.outputs
+                        constants[o] = Symbol("$(o)_const")
+                    end
+                end
+                map!(x -> get(constants, x, x), op.inputs)
+                map!(x -> get(constants, x, x), op.outputs)
+                op.name = name_const(op.name, op.inputs)
+            end
+            map!(x -> get(constants, x, x), outputs)
+            name = name_const(name, inputs)
+        end
+        new(name, inputs, outputs, body, info)
+    end
+end
+
+function name_const(name, inputs)
+    if isdefined(Symbol("δ$(name)_const")) || all(isconst, inputs) || all(isvar, inputs)
+        return name
+    end
+    n = string(name)
+    for k = eachindex(inputs)
+        if !isvar(inputs[k])
+            n *= "_const$k"
+        end
+    end
+    Symbol(n)
 end
 
 function parse_function(expr)

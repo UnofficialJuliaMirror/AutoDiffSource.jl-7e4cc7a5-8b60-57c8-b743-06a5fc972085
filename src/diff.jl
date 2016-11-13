@@ -7,7 +7,8 @@ macro delta(expr)
 end
 
 isvar(n::Number) = false
-isvar(n::Symbol) = true
+isvar(n::Symbol) = !endswith(string(n), "_const")
+isvar(n::Expr) = true
 isconst(n) = !isvar(n)
 
 function δ(ops)
@@ -23,17 +24,12 @@ function δ(ops)
         constname = Symbol("δ$(name)_const")
         if isdefined(constname) || all(isconst, line.inputs)
             if startswith(string(line.name), "dot_")
-                push!(body, :($(line.outputs...) = $(Symbol(name)).($(line.inputs...))))
+                push!(body, :($(toexpr(line.outputs)) = $(Symbol(name)).($(line.inputs...))))
             else
-                push!(body, :($(line.outputs...) = $(Symbol(name))($(line.inputs...))))
+                push!(body, :($(toexpr(line.outputs)) = $(Symbol(name))($(line.inputs...))))
             end
         else
             name = string(line.name)
-            for k = eachindex(line.inputs)
-                if !isvar(line.inputs[k])
-                    name *= "_const$k"
-                end
-            end
             nabla = gensym("∇" * name)
             nablas[line] = nabla
             temp = gensym(name)
@@ -76,7 +72,7 @@ function ∇(ops, nablas)
             end
         end
     end
-    push!(body, toexpr(map(topartial, ops.inputs)))
+    push!(body, toexpr(map(topartial, filter(isvar, ops.inputs))))
     func
 end
 

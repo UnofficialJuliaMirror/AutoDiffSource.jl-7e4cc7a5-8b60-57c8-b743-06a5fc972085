@@ -21,7 +21,6 @@ end
     z = 4.0*3.2*2.5x - y^2 + rand(size(x)) + randn(size(x))
     sum(z) / y + randn() + rand()
 end
-@test checkdiff_inferred(f2, δf2, rand(), rand())
 @test checkdiff_inferred(f2, δf2, rand(5), rand())
 @test checkdiff_inferred(f2, δf2, rand(3,3), rand())
 
@@ -70,15 +69,29 @@ end
 
 # test multiple return values
 @δ f11(x, y) = (x*y, y/x)
-@δ function f12(x, y)
-    return x+y, y-x
+@δ function f12(x, y_const)
+    return x+y_const, y_const-x
 end
-@δ function f13(x, y)
-    a, b = f11(x, y)
-    c, d = f12(x, y)
-    return a+b+c+d
+@δ function f13(x, y_const)
+    a, b = f11(y_const, y_const)
+    c, d = f12(x, b)
+    return a+b+c+d+x
 end
-@test checkdiff_inferred(f13, δf13, rand(), rand())
+@δ function f14(x)
+    f13(x, 2.3) + x
+end
+@test checkdiff(f14, δf14, rand())
+
+# check constants
+@δ function f15(x, y_const)
+    srand(1)
+    z = x + rand()
+    return z+y_const
+end
+@δ function f16(x)
+    f15(x, 2.3) + x
+end
+@test checkdiff_inferred(f16, δf16, rand())
 
 # (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
