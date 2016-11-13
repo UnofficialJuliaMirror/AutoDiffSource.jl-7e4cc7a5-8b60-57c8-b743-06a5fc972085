@@ -11,20 +11,20 @@ type Op
             for op in body
                 map!(x -> get(constants, x, x), op.inputs)
                 if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
-                    [constants[o] = Symbol("$(o)_const") for o in op.outputs]
+                    [constants[o] = Symbol("$(o)_const") for o in filter(isvar, op.outputs)]
                 end
                 map!(x -> get(constants, x, x), op.outputs)
-                op.name = name_const(op.name, op.inputs)
+                op.name = name_const(op.name, op.inputs, op.outputs)
             end
             map!(x -> get(constants, x, x), outputs)
-            name = name_const(name, inputs)
+            name = name_const(name, inputs, outputs)
         end
         new(name, inputs, outputs, body, info)
     end
 end
 
-function name_const(name, inputs)
-    if isdefined(Symbol("δ$(name)_const")) || all(isconst, inputs) || all(isvar, inputs)
+function name_const(name, inputs, outputs)
+    if isdefined(Symbol("δ$(name)_const")) || all(isconst, inputs) || all(isvar, inputs) || all(isconst, outputs)
         return name
     end
     n = string(name)
@@ -60,14 +60,14 @@ function parse_function(expr)
             outputs = [parse_arg!(ops, info, arg) for arg in line.args[1].args]
         elseif line.head == :line
             info = line
-        else error("Do not know how to handle $(line.head) on $line")
+        else error("In function $expr do not know how to handle $(line.head) on $line")
         end
     end
     Op(name, inputs, outputs, ops, info)
 end
 
 function parse_assign!(ops, info, vals, expr::Symbol)
-    @assert vals.head == :tuple "Do not know how to handle $(vals.head) on $vals"
+    @assert vals.head == :tuple "In assignment $vals = $expr do not know how to handle $(vals.head)"
     outputs = [vals.args...]
     push!(ops, Op(:fanout, [expr], outputs, [], info))
     outputs
@@ -81,8 +81,11 @@ function parse_assign!(ops, info, vals, expr::Expr)
 end
 
 function parse_expr!(ops, info, expr::Expr)
-    @assert expr.head == :call || expr.head == :(.) "Do not know how to handle $(expr.head) on $expr"
-    if expr.head == :call
+    @assert expr.head == :call || expr.head == :(.) || expr.head == :tuple "In expr $expr do not know how to handle $(expr.head)"
+    if expr.head == :tuple
+        args = [parse_arg!(ops, info, arg) for arg in expr.args]
+        :tuple, args
+    elseif expr.head == :call
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
         while length(args) > 2 && (expr.args[1] == :(+) || expr.args[1] == :(*))
             a = shift!(args)

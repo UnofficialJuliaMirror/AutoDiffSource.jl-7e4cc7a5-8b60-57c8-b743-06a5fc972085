@@ -24,7 +24,7 @@ function δ(ops)
         push_if_changed!(body, last_info, line.info)
         name = replace(string(line.name), "dot_", "")
         constname = Symbol("δ$(name)_const")
-        if isdefined(constname) || all(isconst, line.inputs)
+        if isdefined(constname) || all(isconst, line.inputs) || all(isconst, line.outputs)
             sname = Symbol(name)
             sname = get(reversenames, sname, sname)
             if sname == :fanout
@@ -58,7 +58,7 @@ end
 
 function ∇(ops, nablas)
     name = Symbol("∇$(ops.name)")
-    inputs = map(topartial, ops.outputs)
+    inputs = map(topartial, filter(isvar, ops.outputs))
     func = :(function $name($(inputs...)); end)
     if length(inputs) == 1
         func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1f0)
@@ -71,12 +71,19 @@ function ∇(ops, nablas)
         push_if_changed!(body, last_info, line.info)
         if haskey(nablas, line)
             nabla = nablas[line]
-            ins = map(topartial, line.outputs)
+            ins = map(topartial, filter(isvar, line.outputs))
             outs = map(topartial, filter(isvar, line.inputs))
             if length(outs) > 0
                 dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
                 push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
                 [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+            end
+        else
+            for o in filter(isvar, line.inputs)
+                op = topartial(o)
+                if op ∉ dupes
+                    push!(body, :($op = δzeros($o)))
+                end
             end
         end
     end
