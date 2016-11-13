@@ -11,6 +11,14 @@ function checkdiff_inferred(f, δf, x0...)
     checkgrad(f, x, ∂x)
 end
 
+# Array indexing
+@δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
+@δ function rosenbrock(x)
+    l = length(x)
+    rosenbrock(x[1:l-1], x[2:l])
+end
+@assert checkdiff_inferred(rosenbrock, δrosenbrock, randn(3))
+
 # check basic use
 @delta f(x, y) = (x + y) * y
 @test checkdiff(f, δf, 2., 3.)

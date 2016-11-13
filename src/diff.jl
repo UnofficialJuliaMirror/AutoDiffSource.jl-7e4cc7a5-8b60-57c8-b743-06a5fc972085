@@ -18,13 +18,16 @@ function δ(ops)
     func = :(function $funcname($(ops.inputs...)); end)
     body = func.args[2].args
     empty!(body)
-    nablas = Dict{Op,Symbol}()
+    nablas = Dict()
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
         name = replace(string(line.name), "dot_", "")
         constname = Symbol("δ$(name)_const")
-        if isdefined(constname) || all(isconst, line.inputs) || all(isconst, line.outputs)
+        if line.name == :ref_const2
+            nablas[line] = (:ref_const2, line.inputs[2])
+            push!(body, :($(toexpr(line.outputs)) = $(line.inputs[1])[$(line.inputs[2])]))
+        elseif isdefined(constname) || all(isconst, line.inputs) || all(isconst, line.outputs)
             sname = Symbol(name)
             sname = get(reversenames, sname, sname)
             if sname == :fanout
@@ -72,18 +75,30 @@ function ∇(ops, nablas)
         push_if_changed!(body, last_info, line.info)
         if haskey(nablas, line)
             nabla = nablas[line]
-            ins = map(topartial, filter(isvar, line.outputs))
-            outs = map(topartial, filter(isvar, line.inputs))
-            if length(outs) > 0
-                for o in filter(isvar, line.outputs)
-                    op = topartial(o)
-                    if op in emptys && !(op in dupes)
-                        [push!(body, :($op = δzeros($o)))]
-                    end
+            if isa(nabla, Tuple) && nabla[1] == :ref_const2
+                ins = map(topartial, filter(isvar, line.outputs))
+                outs = map(topartial, filter(isvar, line.inputs))
+                if outs[1] in dupes
+                    push!(body, :($(outs[1])[$(nabla[2])] += $(toexpr(ins))))
+                else
+                    push!(body, :($(outs[1]) = δzeros($(line.inputs[1]))))
+                    push!(body, :($(outs[1])[$(nabla[2])] = $(toexpr(ins))))
+                    push!(dupes, outs[1])
                 end
-                dedup = [k in dupes ? gensym(k) : (push!(dupes, k); k) for k in outs]
-                push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
-                [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+            else
+                ins = map(topartial, filter(isvar, line.outputs))
+                outs = map(topartial, filter(isvar, line.inputs))
+                if length(outs) > 0
+                    for o in filter(isvar, line.outputs)
+                        op = topartial(o)
+                        if op in emptys && !(op in dupes)
+                            push!(body, :($op = δzeros($o)))
+                        end
+                    end
+                    dedup = [k in dupes ? gensym(k) : (push!(dupes, k); k) for k in outs]
+                    push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
+                    [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
+                end
             end
         else
             [push!(emptys, topartial(o)) for o in filter(isvar, line.inputs)]

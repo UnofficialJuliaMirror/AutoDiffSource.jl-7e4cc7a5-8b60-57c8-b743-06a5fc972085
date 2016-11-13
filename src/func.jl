@@ -4,11 +4,13 @@ const δrand_const = true
 const δrandn_const = true
 const δround_const = true
 const δsign_const = true
+const δlength_const = true
 const δsize_const = true
 const δsrand_const = true
 const δtrunc_const = true
 const δzeros_const = true
 const δones_const = true
+const δcolon_const = true
 δzeros(x::AbstractArray) = zeros(x)
 δzeros{T}(x::T)::T = 0.
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y

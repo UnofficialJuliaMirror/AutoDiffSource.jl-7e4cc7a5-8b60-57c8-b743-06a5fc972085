@@ -81,7 +81,6 @@ function parse_assign!(ops, info, vals, expr::Expr)
 end
 
 function parse_expr!(ops, info, expr::Expr)
-    @assert expr.head == :call || expr.head == :(.) || expr.head == :tuple "In expr $expr do not know how to handle $(expr.head)"
     if expr.head == :tuple
         args = [parse_arg!(ops, info, arg) for arg in expr.args]
         :tuple, args
@@ -94,9 +93,16 @@ function parse_expr!(ops, info, expr::Expr)
             args[1] = arg
         end
         opname(expr.args[1]), args
-    else
+    elseif expr.head == :(.)
         @assert expr.args[2].head == :tuple
         "dot_$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+    elseif expr.head == :ref
+        args = [parse_arg!(ops, info, arg) for arg in expr.args]
+        :ref, args
+    elseif expr.head == :(:)
+        args = [parse_arg!(ops, info, arg) for arg in expr.args]
+        :colon, args
+    else error("In expr $expr do not know how to handle $(expr.head)")
     end
 end
 
