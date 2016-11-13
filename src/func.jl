@@ -103,7 +103,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δpower(x::AbstractFloat, y::AbstractFloat) = (t = x^y; (t, z->(safediv(z*y*t, x), z*t*log(x))))
 δpower_const1(x, y) = (t = x^y; (t, z->z*t*log(x)))
 δpower_const2(x, y) = (t = x^y; (t, z->safediv(z*y*t, x)))
-δround(x::AbstractFloat) = (round(x), y->0.)
 δsin(x) = (sin(x), z->z*cos(x))
 δsinh(x) = (sinh(x), z->z*cosh(x))
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
