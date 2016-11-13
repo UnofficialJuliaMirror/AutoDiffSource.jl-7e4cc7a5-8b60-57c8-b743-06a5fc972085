@@ -77,11 +77,11 @@ function ∇(ops, nablas)
             if length(outs) > 0
                 for o in filter(isvar, line.outputs)
                     op = topartial(o)
-                    if op ∈ emptys && op ∉ dupes
+                    if op in emptys && !(op in dupes)
                         [push!(body, :($op = δzeros($o)))]
                     end
                 end
-                dedup = [k ∈ dupes ? gensym(k) : (push!(dupes, k); k) for k in outs]
+                dedup = [k in dupes ? gensym(k) : (push!(dupes, k); k) for k in outs]
                 push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
                 [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
             end
