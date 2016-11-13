@@ -9,10 +9,10 @@ type Op
         if !isempty(body)
             constants = Dict{Symbol, Symbol}()
             for op in body
+                map!(x -> get(constants, x, x), op.inputs)
                 if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
                     [constants[o] = Symbol("$(o)_const") for o in op.outputs]
                 end
-                map!(x -> get(constants, x, x), op.inputs)
                 map!(x -> get(constants, x, x), op.outputs)
                 op.name = name_const(op.name, op.inputs)
             end

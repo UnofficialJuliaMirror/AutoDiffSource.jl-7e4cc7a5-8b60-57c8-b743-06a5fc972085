@@ -124,5 +124,7 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δtimes(x::AbstractFloat, y::AbstractArray) = (x*y, z->(sum(z.*y), z.*x))
 δtimes(x::AbstractFloat, y::AbstractFloat) = (x*y, z->(z*y, z*x))
 δtimes_const1(x, y) = (x*y, z->(x'*z))
+δtimes_const1(x, y::AbstractFloat) = (x*y, z->sum(x'*z))
 δtimes_const2(x, y) = (x*y, z->(z*y'))
+δtimes_const2(x::AbstractFloat, y) = (x*y, z->sum(z*y'))
 δtranspose(x) = (x', y->y')
