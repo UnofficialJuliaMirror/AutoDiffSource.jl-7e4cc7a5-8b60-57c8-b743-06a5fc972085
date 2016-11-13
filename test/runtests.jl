@@ -103,7 +103,7 @@ for o in [:abs, :sum, :sqrt, :exp, :log, :-, :sign, :log1p, :expm1,
           :erf, :erfc, :gamma, :lgamma]
     t = gensym(o)
     δt = Symbol("δ$t")
-    @eval @δ $t(x) = $o(x)
+    @eval @δ $t(x) = $o(x) + x
     @eval @test checkdiff_inferred($t, $δt, rand())
 end
 
@@ -148,7 +148,7 @@ for o in [:abs, :sqrt, :exp, :log, :sign, :log1p, :expm1,
           :erf, :erfc, :gamma, :lgamma]
     t = gensym(o)
     δt = Symbol("δ$t")
-    @eval @δ $t(x) = sum($o.(x))
+    @eval @δ $t(x) = sum($o.(x) + x)
     @eval @test checkdiff_inferred($t, $δt, rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end

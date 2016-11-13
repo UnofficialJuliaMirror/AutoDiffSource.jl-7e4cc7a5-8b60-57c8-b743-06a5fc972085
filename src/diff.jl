@@ -19,12 +19,13 @@ function δ(ops)
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        constname = Symbol("δ$(line.name)_const")
+        name = replace(string(line.name), "dot_", "")
+        constname = Symbol("δ$(name)_const")
         if isdefined(constname) || all(isconst, line.inputs)
-            if length(line.outputs) > 0
-                push!(body, :($(line.outputs...) = $(line.name)($(line.inputs...))))
+            if startswith(string(line.name), "dot_")
+                push!(body, :($(line.outputs...) = $(Symbol(name)).($(line.inputs...))))
             else
-                push!(body, :($(line.name)($(line.inputs...))))
+                push!(body, :($(line.outputs...) = $(Symbol(name))($(line.inputs...))))
             end
         else
             name = string(line.name)

@@ -3,7 +3,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
 δasin(x) = (asin(x), z->z/sqrt(1-x*x))
 δatan(x) = (atan(x), z->z/(1+x*x))
-δceil(x::AbstractFloat) = (ceil(x), y->0.)
 δcos(x) = (cos(x), z->-z*sin(x))
 δcosh(x) = (cosh(x), z->z*sinh(x))
 δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t./y))))
@@ -15,7 +14,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δdot_acos(x) = (acos.(x), z->-z./sqrt.(1-x.*x))
 δdot_asin(x) = (asin.(x), z->z./sqrt.(1-x.*x))
 δdot_atan(x) = (atan.(x), z->z./(1+x.*x))
-δdot_ceil(x::AbstractArray) = (ceil.(x), y->zeros(y))
 δdot_cos(x) = (cos.(x), z->-z.*sin.(x))
 δdot_cosh(x) = (cosh.(x), z->z.*sinh.(x))
 δdot_divide(x::AbstractArray, y::AbstractFloat) = (t = x./y; (t, z->(z./y, -sum(z.*t)/y)))
@@ -29,7 +27,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δdot_erfc(x) = (erfc.(x), y->-y.*2/sqrt(π).*exp.(-x.*x))
 δdot_exp(x) = (t = exp.(x); (t, z->z.*t))
 δdot_expm1(x) = (t = expm1.(x); (t, z->z.*(1 + t)))
-δdot_floor(x::AbstractArray) = (floor.(x), y->zeros(y))
 δdot_gamma(x) = (t=gamma.(x); (t, y->y.*polygamma.(0,x).*t))
 δdot_lgamma(x) = (lgamma.(x), y->y.*polygamma.(0,x))
 δdot_log(x) = (log.(x), z->z./x)
@@ -62,8 +59,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δdot_power_const1(x, y) = (t = x.^y; (t, z->z.*t.*log(x)))
 δdot_power_const2(x, y) = (t = x.^y; (t, z-> y == 2 ? z.*2x : safediv.(z.*y.*t, x)))
 δdot_power{T}(x::T, y::T) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), z.*t.*log.(x))))
-δdot_round(x::AbstractArray) = (round.(x), y->zeros(y))
-δdot_sign(x::AbstractArray) = (sign.(x), y->zeros(y))
 δdot_sin(x) = (sin.(x), z->z.*cos.(x))
 δdot_sinh(x) = (sinh.(x), z->z.*cosh.(x))
 δdot_sqrt(x) = (t = sqrt.(x); (t, z->0.5*z./t))
@@ -76,13 +71,11 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δdot_times_const1(x, y) = (x.*y, z->(z.*x))
 δdot_times_const2(x, y) = (x.*y, z->(z.*y))
 δdot_times{T}(x::T, y::T) = (x.*y, z->(z.*y, z.*x))
-δdot_trunc(x::AbstractArray) = (trunc.(x), y->zeros(y))
 δerf(x) = (erf(x), y->y*2/sqrt(π)*exp(-x*x))
 δerfc(x) = (erfc(x), y->-y*2/sqrt(π)*exp(-x*x))
 δexp(x) = (t = exp(x); (t, z->z*t))
 δexpm1(x) = (t = expm1(x); (t, z->z*(1 + t)))
 δfanout(x) = (x..., (z...) -> z)
-δfloor(x::AbstractFloat) = (floor(x), y->0.)
 δgamma(x) = (t=gamma(x); (t, y->y*polygamma(0,x)*t))
 δlgamma(x) = (lgamma(x), y->y*polygamma(0,x))
 δlog(x) = (log(x), z->z/x)
@@ -111,7 +104,6 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δpower_const1(x, y) = (t = x^y; (t, z->z*t*log(x)))
 δpower_const2(x, y) = (t = x^y; (t, z->safediv(z*y*t, x)))
 δround(x::AbstractFloat) = (round(x), y->0.)
-δsign(x::AbstractFloat) = (sign(x), y->0.)
 δsin(x) = (sin(x), z->z*cos(x))
 δsinh(x) = (sinh(x), z->z*cosh(x))
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
@@ -126,11 +118,15 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δtimes_const1(x, y) = (x*y, z->(x'*z))
 δtimes_const2(x, y) = (x*y, z->(z*y'))
 δtranspose(x) = (x', y->y')
-δtrunc(x::AbstractFloat) = (trunc(x), y->0.)
 const δsize_const = true
 const δsrand_const = true
 const δrand_const = true
 const δrandn_const = true
+const δceil_const = true
+const δround_const = true
+const δsign_const = true
+const δfloor_const = true
+const δtrunc_const = true
 dot_times(x, y) = x.*y
 times(x, y) = x * y
 dot_plus(x, y) = x .+ y
