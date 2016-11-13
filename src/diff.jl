@@ -11,6 +11,8 @@ isvar(n::Symbol) = !endswith(string(n), "_const")
 isvar(n::Expr) = true
 isconst(n) = !isvar(n)
 
+const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus => :(-), :power => :(^))
+
 function δ(ops)
     funcname = Symbol("δ$(ops.name)")
     func = :(function $funcname($(ops.inputs...)); end)
@@ -23,10 +25,12 @@ function δ(ops)
         name = replace(string(line.name), "dot_", "")
         constname = Symbol("δ$(name)_const")
         if isdefined(constname) || all(isconst, line.inputs)
+            sname = Symbol(name)
+            sname = get(reversenames, sname, sname)
             if startswith(string(line.name), "dot_")
-                push!(body, :($(toexpr(line.outputs)) = $(Symbol(name)).($(line.inputs...))))
+                push!(body, :($(toexpr(line.outputs)) = $sname.($(line.inputs...))))
             else
-                push!(body, :($(toexpr(line.outputs)) = $(Symbol(name))($(line.inputs...))))
+                push!(body, :($(toexpr(line.outputs)) = $sname($(line.inputs...))))
             end
         else
             name = string(line.name)

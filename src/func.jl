@@ -7,17 +7,7 @@ const δsign_const = true
 const δsize_const = true
 const δsrand_const = true
 const δtrunc_const = true
-divide(x, y) = x / y
-dot_divide(x, y) = x ./ y
-dot_minus(x, y) = x .- y
-dot_plus(x, y) = x .+ y
-dot_power(x, y) = x .^ y
-dot_times(x, y) = x.*y
-minus(x, y) = x - y
-plus(x, y) = x + y
-power(x, y) = x ^ y
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
-times(x, y) = x * y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
 δasin(x) = (asin(x), z->z/sqrt(1-x*x))
