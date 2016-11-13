@@ -55,10 +55,14 @@ Can be used as a building block for other functions:
 @δ f3(x, y) = div(x, y) + y
 ```
 
-If you have external constants that you don't need to differentiate:
+If you have function arguments that you don't need to differentiate:
 ```
-const c = rand(10)
-@δ f4(x) = sum(c .* x)
+# "_constant" suffix tells that argument number 2 is a constant
+@δ f4(x, c_const) = sum(c_const .* x)
+# make sure to call the version with the right signature, in this case argument #2 is constant
+z, ∇f4 = δf4_const2(x, c)
+# the derivative of c will not be calculated
+∂x = ∇f4()
 ```
 
 [Example](https://github.com/gaika/AutoDiffSource.jl/blob/master/examples/mnist_autoencoder.jl) from training an [autoencoder NN](http://int8.io/automatic-differentiation-machine-learning-julia/):
