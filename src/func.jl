@@ -7,6 +7,7 @@ const δsign_const = true
 const δsize_const = true
 const δsrand_const = true
 const δtrunc_const = true
+fanout(x) = x
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
