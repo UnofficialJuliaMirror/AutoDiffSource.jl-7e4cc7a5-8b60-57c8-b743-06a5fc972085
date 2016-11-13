@@ -95,6 +95,19 @@ end
 end
 @test checkdiff_inferred(f16, δf16, rand())
 
+# test tuple constants
+@δ function f17(x)
+    z = x.^3 + x
+    state_const = (z, x.^2)
+    state_const, x.^3
+end
+@δ function test_f17(x)
+    state_const, y = f17(x)
+    sum(y)
+end
+@test checkdiff_inferred(test_f17, δtest_f17, rand())
+@test checkdiff_inferred(test_f17, δtest_f17, rand(3))
+
 # (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)

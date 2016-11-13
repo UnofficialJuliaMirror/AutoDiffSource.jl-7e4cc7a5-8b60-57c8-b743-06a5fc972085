@@ -10,7 +10,7 @@ const δtrunc_const = true
 const δzeros_const = true
 const δones_const = true
 δzeros(x::AbstractArray) = zeros(x)
-δzeros{T}(x::T) = 0::T
+δzeros{T}(x::T)::T = 0.
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
