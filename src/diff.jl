@@ -8,7 +8,7 @@ end
 
 isvar(n::Number) = false
 isvar(n::Symbol) = !endswith(string(n), "_const")
-isvar(n::Expr) = true
+isvar(n::Expr) = n.head == :(::) ? isvar(n.args[1]) : true
 isconst(n) = !isvar(n)
 
 const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus => :(-), :power => :(^))

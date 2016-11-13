@@ -83,7 +83,7 @@ end
 @test checkdiff(f14, δf14, rand())
 
 # check constants
-@δ function f15(x, y_const)
+@δ function f15(x, y_const::Float64)
     srand(1)
     z = x + rand()
     return z+y_const
