@@ -86,7 +86,7 @@ function ∇(ops, nablas)
                 [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
             end
         else
-            foreach(o -> push!(emptys, topartial(o)), filter(isvar, line.inputs))
+            [push!(emptys, topartial(o)) for o in filter(isvar, line.inputs)]
         end
     end
     push!(body, toexpr(map(topartial, filter(isvar, ops.inputs))))
