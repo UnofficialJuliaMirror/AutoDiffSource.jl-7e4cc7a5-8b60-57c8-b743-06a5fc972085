@@ -27,7 +27,11 @@ function δ(ops)
         if isdefined(constname) || all(isconst, line.inputs)
             sname = Symbol(name)
             sname = get(reversenames, sname, sname)
-            if startswith(string(line.name), "dot_")
+            if sname == :fanout
+                temp = gensym(name)
+                push!(body, :($temp = $(line.inputs...)))
+                [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
+            elseif startswith(string(line.name), "dot_")
                 push!(body, :($(toexpr(line.outputs)) = $sname.($(line.inputs...))))
             else
                 push!(body, :($(toexpr(line.outputs)) = $sname($(line.inputs...))))
