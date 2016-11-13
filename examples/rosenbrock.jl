@@ -2,10 +2,10 @@ using AutoDiffSource
 using BenchmarkTools
 
 @δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
-@δ function rosenbrock(x)
-    l = length(x)
-    rosenbrock(x[1:l-1], x[2:l])
-end
+@δ rosenbrock(x) = rosenbrock(x[1:length(x)-1], x[2:length(x)])
+
+# verify correctness
+@assert checkdiff(rosenbrock, δrosenbrock, randn(3))
 
 # handcrafted derivative
 function ∇rosenbrock(x)
@@ -22,9 +22,7 @@ end
 const x0 = randn(3)
 @assert checkgrad(rosenbrock, (x0,), ∇rosenbrock(x0))
 
-# verify correctness
-@assert checkdiff(rosenbrock, δrosenbrock, randn(3))
-
+# benchmark
 const x1 = randn(1_000)
 trial1 = @benchmark (rosenbrock(x1), ∇rosenbrock(x1));
 trial2 = @benchmark ((y, ∇r) = δrosenbrock(x1); ∇r())
