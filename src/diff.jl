@@ -66,6 +66,7 @@ function ∇(ops, nablas)
     body = func.args[2].args
     empty!(body)
     dupes = Set(inputs)
+    emptys = Set()
     last_info = [Expr(:line)]
     for line in reverse(ops.body)
         push_if_changed!(body, last_info, line.info)
@@ -74,17 +75,18 @@ function ∇(ops, nablas)
             ins = map(topartial, filter(isvar, line.outputs))
             outs = map(topartial, filter(isvar, line.inputs))
             if length(outs) > 0
-                dedup = [in(k, dupes)? gensym(k) : (push!(dupes, k); k) for k in outs]
+                for o in filter(isvar, line.outputs)
+                    op = topartial(o)
+                    if op ∈ emptys && op ∉ dupes
+                        [push!(body, :($op = δzeros($o)))]
+                    end
+                end
+                dedup = [k ∈ dupes ? gensym(k) : (push!(dupes, k); k) for k in outs]
                 push!(body, :($(toexpr(dedup)) = $nabla($(ins...))))
                 [push!(body, :($(outs[k]) += $(dedup[k]))) for k in find(outs .!= dedup)]
             end
         else
-            for o in filter(isvar, line.inputs)
-                op = topartial(o)
-                if op ∉ dupes
-                    push!(body, :($op = δzeros($o)))
-                end
-            end
+            foreach(o -> push!(emptys, topartial(o)), filter(isvar, line.inputs))
         end
     end
     push!(body, toexpr(map(topartial, filter(isvar, ops.inputs))))
