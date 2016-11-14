@@ -57,11 +57,7 @@ Can be used as a building block for other functions:
 Simple array indexing is supported:
 ```
 @δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
-@δ function rosenbrock(x)
-    l = length(x)
-    rosenbrock(x[1:l-1], x[2:l])
-end
-
+@δ rosenbrock(x) = rosenbrock(x[1:length(x)-1], x[2:length(x)])
 # verify correctness
 @assert checkdiff(rosenbrock, δrosenbrock, randn(3))
 ```
