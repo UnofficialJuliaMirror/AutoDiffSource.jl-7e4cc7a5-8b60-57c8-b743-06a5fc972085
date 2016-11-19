@@ -130,6 +130,14 @@ end
 end
 @test checkdiff_inferred(f19, δf19, rand())
 
+# reassignment inside
+@δ function f20(x)
+    x = x + x
+    x = x * x
+    x
+end
+@test checkdiff_inferred(f20, δf20, rand())
+
 # (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)

@@ -9,11 +9,14 @@ type Op
         if !isempty(body)
             mapping = Dict{Symbol, Symbol}()
             remap = x -> get(mapping, x, x)
+            uniques = Set{Symbol}()
             for op in body
                 map!(remap, op.inputs)
+                union!(uniques, filter(o->isa(o, Symbol), op.inputs))
                 if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
                     [mapping[o] = Symbol("$(o)_const") for o in filter(isvar, op.outputs)]
                 end
+                [mapping[o] = gensym(o) for o in filter(o->o in inputs, op.outputs)]
                 map!(remap, op.outputs)
                 op.name = name_const(op.name, op.inputs, op.outputs)
             end
