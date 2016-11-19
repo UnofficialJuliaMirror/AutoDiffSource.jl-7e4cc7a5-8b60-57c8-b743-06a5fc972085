@@ -50,7 +50,9 @@ function parse_function(expr)
     info = Expr(:line)
 
     for line in body.args
-        if line.head == :(=)
+        if isa(line, Symbol)
+            outputs = [line]
+        elseif line.head == :(=)
             outputs = parse_assign!(ops, info, line.args...)
         elseif line.head == :call || line.head == :(.)
             outputs = [parse_arg!(ops, info, line)]
