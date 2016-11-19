@@ -116,6 +116,20 @@ end
 @test checkdiff_inferred(test_f17, δtest_f17, rand())
 @test checkdiff_inferred(test_f17, δtest_f17, rand(3))
 
+# single return symbol
+@δ function f18(x)
+    y = x + x
+    return y
+end
+@test checkdiff_inferred(f18, δf18, rand())
+
+# single return symbol
+@δ function f19(x)
+    y = x + x
+    y
+end
+@test checkdiff_inferred(f19, δf19, rand())
+
 # (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)
