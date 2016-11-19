@@ -14,9 +14,9 @@ Pkg.add("AutoDiffSource")
 using AutoDiffSource
 ```
 
-### Differentiate a function with ```@delta``` macro:
+### Differentiate a function with ```@δ``` macro:
 ```
-# type @\delta<TAB> or @delta if unicode scares you
+# you can type δ with \delta<TAB> 
 @δ f(x, y) = (x + 2y) * y^2
 ```
 
