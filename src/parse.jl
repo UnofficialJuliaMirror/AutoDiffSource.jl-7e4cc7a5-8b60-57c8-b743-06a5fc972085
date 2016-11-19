@@ -7,16 +7,17 @@ type Op
 
     function Op(name, inputs, outputs, body, info)
         if !isempty(body)
-            constants = Dict{Symbol, Symbol}()
+            mapping = Dict{Symbol, Symbol}()
+            remap = x -> get(mapping, x, x)
             for op in body
-                map!(x -> get(constants, x, x), op.inputs)
+                map!(remap, op.inputs)
                 if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
-                    [constants[o] = Symbol("$(o)_const") for o in filter(isvar, op.outputs)]
+                    [mapping[o] = Symbol("$(o)_const") for o in filter(isvar, op.outputs)]
                 end
-                map!(x -> get(constants, x, x), op.outputs)
+                map!(remap, op.outputs)
                 op.name = name_const(op.name, op.inputs, op.outputs)
             end
-            map!(x -> get(constants, x, x), outputs)
+            map!(remap, outputs)
             name = name_const(name, inputs, outputs)
         end
         new(name, inputs, outputs, body, info)
