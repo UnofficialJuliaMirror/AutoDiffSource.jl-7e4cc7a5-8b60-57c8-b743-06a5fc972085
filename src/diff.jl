@@ -1,11 +1,3 @@
-macro δ(expr)
-    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
-end
-
-macro delta(expr)
-    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
-end
-
 isvar(n::Number) = false
 isvar(n::Symbol) = !endswith(string(n), "_const")
 isvar(n::Expr) = n.head == :(::) ? isvar(n.args[1]) : true

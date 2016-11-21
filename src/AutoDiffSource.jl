@@ -28,4 +28,8 @@ include("diff.jl")
 include("func.jl")
 include("checkdiff.jl")
 
+macro δ(expr)
+    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
+end
+
 end

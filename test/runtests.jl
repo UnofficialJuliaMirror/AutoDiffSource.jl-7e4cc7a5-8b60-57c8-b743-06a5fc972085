@@ -20,7 +20,7 @@ end
 @assert checkdiff_inferred(rosenbrock, δrosenbrock, randn(3))
 
 # check basic use
-@delta f(x, y) = (x + y) * y
+@δ f(x, y) = (x + y) * y
 @test checkdiff(f, δf, 2., 3.)
 
 # check numerical constants
