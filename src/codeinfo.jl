@@ -5,7 +5,7 @@ function δ(f)
     fdef  = fs.ms[1]
     fn = VERSION >= v"0.6.0-" ? Base.uncompressed_ast(fdef, fdef.source).code : Base.uncompressed_ast(fdef.lambda_template)
     fcode = fn[2:end]
-    fargs = [Symbol("_$i") for i in 2:fdef.nargs]
+    fargs = [Symbol("_$i") for i in 2:length(fieldnames(fdef.sig))]
     fname = Symbol(string(f))
     func = :(function $fname($(fargs...)); end)
     body = func.args[2].args
