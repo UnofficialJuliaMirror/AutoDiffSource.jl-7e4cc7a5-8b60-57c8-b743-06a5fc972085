@@ -44,7 +44,7 @@ function name_const(name, inputs, outputs)
     Symbol(n)
 end
 
-function parse_function(expr, mapping = Dict{Symbol, Symbol}())
+function parse_function(expr, info, mapping = Dict{Symbol, Symbol}())
     @assert (expr.head == :function || expr.head == :(=)) && length(expr.args) == 2  "Only functions can be differentiated"
     header = expr.args[1]
     @assert header.head == :call "Only functions can be differentiated"
@@ -55,10 +55,9 @@ function parse_function(expr, mapping = Dict{Symbol, Symbol}())
 
     ops = []
     outputs = []
-    info = Expr(:line)
-
     for line in body.args
-        if isa(line, LineNumberNode) # Don't eat line numbers
+        if isa(line, LineNumberNode)
+            info = Expr(:line, line.line, info.args[2])
         elseif isa(line, Symbol)
             outputs = [line]
         elseif line.head == :(=)

@@ -39,6 +39,7 @@ macro δ(f::Symbol)
     for fdef in fs.ms
         fn = VERSION >= v"0.6.0-" ? Base.uncompressed_ast(fdef, fdef.source).code : Base.uncompressed_ast(fdef.lambda_template)
         fcode = fn[2:end]
+        info = Expr(:line, fdef.line, fdef.file)
         types = getfield(fdef.sig, 3)
         fargs = [Expr(:(::), Symbol("_$i"), types[i]) for i in 2:length(types)]
         fname = Symbol(string(f))
@@ -46,13 +47,13 @@ macro δ(f::Symbol)
         body = func.args[2].args
         empty!(body)
         foreach(arg -> push!(body, arg), fcode)
-        push!(expr.args, δ(func))
+        push!(expr.args, δ(func, info))
     end
     esc(expr)
 end
 
-function δ(expr)
-    ops = parse_function(expr)
+function δ(expr, info = Expr(:line))
+    ops = parse_function(expr, info)
     for op in ops.body
         name = replace(string(op.name), r"^dot_", "")
         if !isdefined(Symbol("δ$name")) && !isdefined(Symbol("δ$(name)_const"))
@@ -68,7 +69,7 @@ function δ(expr)
             if isa(name, Expr)
                 name = name.args[1]
             end
-            op = parse_function(expr, Dict{Symbol,Symbol}(name => Symbol(string(name) * "_const")))
+            op = parse_function(expr, info, Dict{Symbol,Symbol}(name => Symbol(string(name) * "_const")))
             push!(ex.args, delta(op))
         end
     end
