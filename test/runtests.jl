@@ -12,7 +12,8 @@ function checkdiff_inferred(f, δf, x0...)
 end
 
 # Array indexing
-@δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
+rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
+eval(δ(rosenbrock))
 @δ function rosenbrock(x)
     l = length(x)
     rosenbrock(x[1:l-1], x[2:l])

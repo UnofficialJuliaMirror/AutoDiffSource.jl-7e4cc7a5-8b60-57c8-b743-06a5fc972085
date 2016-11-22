@@ -1,7 +1,7 @@
 __precompile__()
 module AutoDiffSource
 
-export @δ, checkdiff, checkgrad
+export @δ, δ, checkdiff, checkgrad
 
 export δplus, δminus, δtimes, δdivide, δabs, δsum, δsqrt, δexp, δlog, δpower, δdot
 export δdot_plus, δdot_minus, δdot_times, δdot_divide, δdot_abs, δdot_sqrt, δdot_exp, δdot_log, δdot_power
@@ -27,9 +27,10 @@ include("parse.jl")
 include("diff.jl")
 include("func.jl")
 include("checkdiff.jl")
+include("codeinfo.jl")
 
 macro δ(expr)
-    esc(:( $expr; $(δ(parse_function(macroexpand(expr)); ))))
+    esc(:( $expr; $(delta(parse_function(macroexpand(expr)); ))))
 end
 
 end

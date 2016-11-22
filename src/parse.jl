@@ -93,6 +93,9 @@ function parse_expr!(ops, info, expr::Expr)
         args = [parse_arg!(ops, info, arg) for arg in expr.args]
         :tuple, args
     elseif expr.head == :call
+        if isa(expr.args[1], GlobalRef)
+            expr.args[1] = expr.args[1].name
+        end
         args = [parse_arg!(ops, info, arg) for arg in expr.args[2:end]]
         while length(args) > 2 && (expr.args[1] == :(+) || expr.args[1] == :(*))
             a = shift!(args)
@@ -128,3 +131,4 @@ end
 
 parse_arg!(ops, info, arg::Symbol) = arg
 parse_arg!(ops, info, arg::Number) = arg
+parse_arg!(ops, info, arg::SlotNumber) = Symbol(string(arg))
