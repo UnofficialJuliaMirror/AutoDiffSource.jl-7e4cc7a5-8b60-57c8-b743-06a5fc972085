@@ -54,7 +54,8 @@ function parse_function(expr)
     info = Expr(:line)
 
     for line in body.args
-        if isa(line, Symbol)
+        if isa(line, LineNumberNode) # Don't eat line numbers
+        elseif isa(line, Symbol)
             outputs = [line]
         elseif line.head == :(=)
             outputs = parse_assign!(ops, info, line.args...)
@@ -124,7 +125,7 @@ end
 opname(name) = get(opnames, name, name)
 const opnames = Dict(:(.*) => :dot_times, :(*) => :times, :(.+) => :dot_plus, :(+) => :plus,
                      :(./) => :dot_divide, :(/) => :divide, :(.-) => :dot_minus, :(-) => :minus,
-                     :(.^) => :dot_power, :(^) => :power)
+                     :(.^) => :dot_power, :(^) => :power, :getindex => :ref)
 
 function parse_arg!(ops, info, arg::Expr)
     func, inputs = parse_expr!(ops, info, arg)

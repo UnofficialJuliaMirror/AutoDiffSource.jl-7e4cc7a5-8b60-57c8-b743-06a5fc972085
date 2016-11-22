@@ -12,13 +12,21 @@ function checkdiff_inferred(f, δf, x0...)
 end
 
 # Array indexing
-rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
-@δ rosenbrock
+@δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
 @δ function rosenbrock(x)
     l = length(x)
     rosenbrock(x[1:l-1], x[2:l])
 end
 @assert checkdiff_inferred(rosenbrock, δrosenbrock, randn(3))
+
+# diffentiate a 3rd party function without source code
+rosen(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
+function rosen(x)
+    l = length(x)
+    rosen(x[1:l-1], x[2:l])
+end
+@δ rosen
+@assert checkdiff_inferred(rosen, δrosen, randn(3))
 
 # check basic use
 @δ f(x, y) = (x + y) * y
