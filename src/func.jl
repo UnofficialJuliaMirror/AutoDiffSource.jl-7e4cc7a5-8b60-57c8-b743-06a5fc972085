@@ -11,6 +11,8 @@ const δtrunc_const = true
 const δzeros_const = true
 const δones_const = true
 const δcolon_const = true
+const δref_const2 = true
+const δtuple = true
 δzeros(x::AbstractArray) = zeros(x)
 δzeros{T}(x::T)::T = 0.
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y

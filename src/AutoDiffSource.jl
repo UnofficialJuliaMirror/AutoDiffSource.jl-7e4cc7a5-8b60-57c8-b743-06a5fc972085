@@ -9,7 +9,7 @@ export δplus_const1, δminus_const1, δtimes_const1, δdivide_const1, δpower_c
 export δdot_plus_const1, δdot_minus_const1, δdot_times_const1, δdot_divide_const1, δdot_power_const1
 export δplus_const2, δminus_const2, δtimes_const2, δdivide_const2, δpower_const2
 export δdot_plus_const2, δdot_minus_const2, δdot_times_const2, δdot_divide_const2, δdot_power_const2
-export δfanout, δzeros, δzeros_const, δones_const, δlength_const, δcolon_const
+export δfanout, δzeros, δzeros_const, δones_const, δlength_const, δcolon_const, δref_const2, δtuple
 export δsrand_const, δrand_const, δrandn_const, δsize_const, δsign_const
 
 export δlog1p, δexpm1, δsin, δcos, δtan, δsinh, δcosh, δtanh, δasin, δacos, δatan
@@ -53,6 +53,13 @@ end
 
 function δ(expr)
     ops = parse_function(expr)
+    for op in ops.body
+        name = replace(string(op.name), r"^dot_", "")
+        if !isdefined(Symbol("δ$name")) && !isdefined(Symbol("δ$(name)_const"))
+            eval(Main, :(@δ $(Symbol(name))))
+        end
+    end
+
     ex = Expr(:block)
     push!(ex.args, delta(ops))
     ins = filter(isvar, ops.inputs)
