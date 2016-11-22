@@ -65,7 +65,7 @@ Simple array indexing is supported:
 
 If you have function arguments that you don't need to differentiate:
 ```
-# "_constant" suffix tells that argument number 2 is a constant
+# "_const" suffix tells that argument number 2 is a constant
 @δ f4(x, c_const) = sum(c_const .* x)
 # make sure to call the version with the right signature, in this case argument #2 is constant
 z, ∇f4 = δf4_const2(x, c)
