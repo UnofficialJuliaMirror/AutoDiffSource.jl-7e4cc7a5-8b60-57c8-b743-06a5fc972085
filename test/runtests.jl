@@ -1,6 +1,19 @@
 using AutoDiffSource
 using Base.Test
 
+# Test example
+@δ sigmoid(x) = 1 ./ (1 .+ exp.(-x))
+@δ function autoencoder(We1, We2, Wd, b1, b2, input)
+    firstLayer = sigmoid(We1 * input + b1)
+    encodedInput = sigmoid(We2 * firstLayer + b2)
+    reconstructedInput = sigmoid(Wd * encodedInput)
+end
+@δ function autoencoderError(We1, We2, Wd, b1, b2, input)
+    reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
+    return sum((input - reconstructedInput).^2)
+end
+@assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
+
 function checkdiff_inferred(f, δf, x0...)
     x = [x0...]
     y0 = f(x...)

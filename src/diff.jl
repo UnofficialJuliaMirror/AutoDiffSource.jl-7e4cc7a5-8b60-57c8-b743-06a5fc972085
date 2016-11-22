@@ -14,7 +14,7 @@ function delta(ops)
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        name = replace(string(line.name), "dot_", "")
+        name = replace(string(line.name), r"^dot_", "")
         constname = Symbol("δ$(name)_const")
         if line.name == :ref_const2
             nablas[line] = (:ref_const2, line.inputs[2])
