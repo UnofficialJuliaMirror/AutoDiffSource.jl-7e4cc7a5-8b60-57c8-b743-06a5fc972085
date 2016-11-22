@@ -53,29 +53,30 @@ function parse_function(expr, info, mapping = Dict{Symbol, Symbol}())
     body = expr.args[2]
     @assert body.head == :block "Body of the function is not found"
 
-    ops = []
-    outputs = []
-    for line in body.args
-        if isa(line, LineNumberNode)
-            info = Expr(:line, line.line, info.args[2])
-        elseif isa(line, Symbol)
-            outputs = [line]
-        elseif line.head == :(=)
-            outputs = parse_assign!(ops, info, line.args...)
-        elseif line.head == :call || line.head == :(.)
-            outputs = [parse_arg!(ops, info, line)]
-        elseif line.head == :return && isa(line.args[1], Symbol)
-            outputs = [line.args[1]]
-        elseif line.head == :tuple || line.head == :return && line.args[1].head != :tuple
-            outputs = [parse_arg!(ops, info, arg) for arg in line.args]
-        elseif line.head == :return && line.args[1].head == :tuple
-            outputs = [parse_arg!(ops, info, arg) for arg in line.args[1].args]
-        elseif line.head == :line
-            info = line
-        else error("In function $expr do not know how to handle $(line.head) on $line")
-        end
-    end
+    outputs = ops = []
+    [(info, outputs) = parse_line!(ops, info, line) for line in body.args]
     Op(name, inputs, outputs, ops, info, mapping)
+end
+
+parse_line!(ops, info, line::LineNumberNode) = Expr(:line, line.line, info.args[2]), []
+parse_line!(ops, info, line::Symbol) = info, [line]
+function parse_line!(ops, info, line::Expr)
+    outputs = []
+    if line.head == :(=)
+        outputs = parse_assign!(ops, info, line.args...)
+    elseif line.head == :call || line.head == :(.)
+        outputs = [parse_arg!(ops, info, line)]
+    elseif line.head == :return && isa(line.args[1], Symbol)
+        outputs = [line.args[1]]
+    elseif line.head == :tuple || line.head == :return && line.args[1].head != :tuple
+        outputs = [parse_arg!(ops, info, arg) for arg in line.args]
+    elseif line.head == :return && line.args[1].head == :tuple
+        outputs = [parse_arg!(ops, info, arg) for arg in line.args[1].args]
+    elseif line.head == :line
+        info = line
+    else error("In function $expr do not know how to handle $(line.head) on $line")
+    end
+    info, outputs
 end
 
 function parse_assign!(ops, info, vals, expr::Symbol)
