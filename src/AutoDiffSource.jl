@@ -1,7 +1,7 @@
 __precompile__()
 module AutoDiffSource
 
-export @δ, δ, checkdiff, checkgrad
+export @δ, checkdiff, checkgrad
 
 export δplus, δminus, δtimes, δdivide, δabs, δsum, δsqrt, δexp, δlog, δpower, δdot
 export δdot_plus, δdot_minus, δdot_times, δdot_divide, δdot_abs, δdot_sqrt, δdot_exp, δdot_log, δdot_power
@@ -27,10 +27,25 @@ include("parse.jl")
 include("diff.jl")
 include("func.jl")
 include("checkdiff.jl")
-include("codeinfo.jl")
 
-macro δ(expr)
+macro δ(expr::Expr)
     esc(:( $expr; $(delta(parse_function(macroexpand(expr)); ))))
+end
+
+macro δ(f::Symbol)
+    fs = methods(eval(GlobalRef(Main, f)))
+    length(fs) >  0 || error("function '$f' not found")
+    length(fs) <  2 || error("function '$f' has too many signatures")
+    fdef  = fs.ms[1]
+    fn = VERSION >= v"0.6.0-" ? Base.uncompressed_ast(fdef, fdef.source).code : Base.uncompressed_ast(fdef.lambda_template)
+    fcode = fn[2:end]
+    fargs = [Symbol("_$i") for i in 2:length(fieldnames(fdef.sig))]
+    fname = Symbol(string(f))
+    func = :(function $fname($(fargs...)); end)
+    body = func.args[2].args
+    empty!(body)
+    foreach(arg -> push!(body, arg), fcode)
+    esc(delta(parse_function(func)))
 end
 
 end
