@@ -65,9 +65,8 @@ Simple array indexing is supported:
 
 If you have function arguments that you don't need to differentiate:
 ```
-# "_const" suffix tells that argument number 2 is a constant
-@δ f4(x, c_const) = sum(c_const .* x)
-# make sure to call the version with the right signature, in this case argument #2 is constant
+@δ f4(x, c) = sum(c .* x)
+# just call the version with the "_constN" signature, in this case argument #2 is constant
 z, ∇f4 = δf4_const2(x, c)
 # the derivative of c will not be calculated
 ∂x = ∇f4()
@@ -84,7 +83,7 @@ z, ∇f4 = δf4_const2(x, c)
 end
 @assert checkdiff(autoencoderError, δautoencoderError, 
                   randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
-value, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
+value, ∇autoencoderError = δautoencoderError_const6(We1, We2, Wd, b1, b2, input)
 ∂We1, ∂We2, ∂Wd, ∂b1, ∂b2 = ∇autoencoderError()
 ```
 
