@@ -35,17 +35,20 @@ end
 macro δ(f::Symbol)
     fs = methods(eval(GlobalRef(Main, f)))
     length(fs) >  0 || error("function '$f' not found")
-    length(fs) <  2 || error("function '$f' has too many signatures")
-    fdef  = fs.ms[1]
-    fn = VERSION >= v"0.6.0-" ? Base.uncompressed_ast(fdef, fdef.source).code : Base.uncompressed_ast(fdef.lambda_template)
-    fcode = fn[2:end]
-    fargs = [Symbol("_$i") for i in 2:length(fieldnames(fdef.sig))]
-    fname = Symbol(string(f))
-    func = :(function $fname($(fargs...)); end)
-    body = func.args[2].args
-    empty!(body)
-    foreach(arg -> push!(body, arg), fcode)
-    esc(delta(parse_function(func)))
+    expr = Expr(:block)
+    for fdef in fs.ms
+        fn = VERSION >= v"0.6.0-" ? Base.uncompressed_ast(fdef, fdef.source).code : Base.uncompressed_ast(fdef.lambda_template)
+        fcode = fn[2:end]
+        types = getfield(fdef.sig, 3)
+        fargs = [Expr(:(::), Symbol("_$i"), types[i]) for i in 2:length(types)]
+        fname = Symbol(string(f))
+        func = :(function $fname($(fargs...)); end)
+        body = func.args[2].args
+        empty!(body)
+        foreach(arg -> push!(body, arg), fcode)
+        push!(expr.args, delta(parse_function(func)))
+    end
+    esc(expr)
 end
 
 end

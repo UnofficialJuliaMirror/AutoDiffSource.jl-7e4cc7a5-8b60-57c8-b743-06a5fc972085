@@ -83,10 +83,14 @@ end
 
 function parse_assign!(ops, info, vals, expr::Expr)
     func, inputs = parse_expr!(ops, info, expr)
-    outputs = typeof(vals) == Symbol ? [vals] : [vals.args...]
+    outputs = outs(vals)
     push!(ops, Op(func, inputs, outputs, [], info))
     outputs
 end
+
+outs(vals::Symbol) = [vals]
+outs(vals::SlotNumber) = [Symbol(string(vals))]
+outs(vals::Expr) = [vals.args...]
 
 function parse_expr!(ops, info, expr::Expr)
     if expr.head == :tuple
