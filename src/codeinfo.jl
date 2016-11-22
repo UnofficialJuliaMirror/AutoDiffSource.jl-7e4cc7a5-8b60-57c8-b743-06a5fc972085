@@ -11,6 +11,5 @@ function δ(f)
     body = func.args[2].args
     empty!(body)
     foreach(arg -> push!(body, arg), fcode)
-    op = parse_function(func)
-    delta(op)
+    delta(parse_function(func))
 end
