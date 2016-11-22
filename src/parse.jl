@@ -1,12 +1,5 @@
 remaps(mapping, x::Symbol) = get(mapping, x, x)
-function remaps(mapping, x::Expr)
-    if x.head == :(::)
-        Expr(x.head, get(mapping, x.args[1], x.args[1]), x.args[2])
-    elseif x.head == :(...)
-        Expr(x.head, get(mapping, x.args[1], x.args[1]))
-    else error("Unknown expression $x")
-    end
-end
+remaps(mapping, x::Expr) = Expr(x.head, remaps(mapping, x.args[1]), x.args[2:end]...)
 remaps(mapping, x::Number) = x
 
 type Op
