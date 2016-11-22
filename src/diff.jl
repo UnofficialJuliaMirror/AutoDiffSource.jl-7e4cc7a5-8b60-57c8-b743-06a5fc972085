@@ -5,7 +5,7 @@ isconst(n) = !isvar(n)
 
 const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus => :(-), :power => :(^))
 
-function δ(ops::Op)
+function δ(ops)
     funcname = Symbol("δ$(ops.name)")
     func = :(function $funcname($(ops.inputs...)); end)
     body = func.args[2].args
