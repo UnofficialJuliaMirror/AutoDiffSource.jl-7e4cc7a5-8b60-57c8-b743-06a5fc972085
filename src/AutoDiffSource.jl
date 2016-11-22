@@ -29,7 +29,7 @@ include("func.jl")
 include("checkdiff.jl")
 
 macro δ(expr::Expr)
-    esc(:( $expr; $(delta(parse_function(macroexpand(expr)); ))))
+    esc(:( $expr; $(δ(macroexpand(expr)))))
 end
 
 macro δ(f::Symbol)
@@ -46,9 +46,13 @@ macro δ(f::Symbol)
         body = func.args[2].args
         empty!(body)
         foreach(arg -> push!(body, arg), fcode)
-        push!(expr.args, delta(parse_function(func)))
+        push!(expr.args, δ(func))
     end
     esc(expr)
+end
+
+function δ(expr)
+    delta(parse_function(expr))
 end
 
 end

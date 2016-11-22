@@ -5,9 +5,8 @@ type Op
     body::Vector
     info::Expr
 
-    function Op(name, inputs, outputs, body, info)
+    function Op(name, inputs, outputs, body, info, mapping = Dict{Symbol, Symbol}())
         if !isempty(body)
-            mapping = Dict{Symbol, Symbol}()
             remap = x -> get(mapping, x, x)
             uniques = Set{Symbol}()
             for op in body
@@ -40,7 +39,7 @@ function name_const(name, inputs, outputs)
     Symbol(n)
 end
 
-function parse_function(expr)
+function parse_function(expr, mapping = Dict{Symbol, Symbol}())
     @assert (expr.head == :function || expr.head == :(=)) && length(expr.args) == 2  "Only functions can be differentiated"
     header = expr.args[1]
     @assert header.head == :call "Only functions can be differentiated"
@@ -72,7 +71,7 @@ function parse_function(expr)
         else error("In function $expr do not know how to handle $(line.head) on $line")
         end
     end
-    Op(name, inputs, outputs, ops, info)
+    Op(name, inputs, outputs, ops, info, mapping)
 end
 
 function parse_assign!(ops, info, vals, expr::Symbol)
