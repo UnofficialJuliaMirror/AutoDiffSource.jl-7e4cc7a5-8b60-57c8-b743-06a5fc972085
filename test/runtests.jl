@@ -54,8 +54,8 @@ end
 @test checkdiff_inferred(f5, δf5, rand()-0.5)
 
 # test external constants
-const f6_const = rand(5)
-@δ f6(x) = sum(f6_const .* x.^2)
+const f6r = rand(5)
+@δ f6(x) = sum(f6r .* x.^2)
 @test checkdiff_inferred(f6, δf6, rand(5))
 
 # test ...
@@ -67,8 +67,8 @@ end
 
 # test ...
 const f8_const = rand(13)
-@δ function f8(a, x_const)
-    b, c, d, e, f, g, h, i, j, k, l, m, n = x_const
+@δ function f8(a, x)
+    b, c, d, e, f, g, h, i, j, k, l, m, n = x
     a * b + c * d - e * f + g * h - i * j / k * l + m * n
 end
 @δ test_f8(x) = f8(x, f8_const)
@@ -88,11 +88,11 @@ end
 
 # test multiple return values
 @δ f11(x, y) = (x*y, y/x)
-@δ function f12(x, y_const)
-    return x+y_const, y_const-x
+@δ function f12(x, y)
+    return x+y, y-x
 end
-@δ function f13(x, y_const)
-    a, b = f11(y_const, y_const)
+@δ function f13(x, y)
+    a, b = f11(y, y)
     c, d = f12(x, b)
     return a+b+c+d+x
 end
@@ -102,10 +102,10 @@ end
 @test checkdiff(f14, δf14, rand())
 
 # check constants
-@δ function f15(x, y_const::Float64)
+@δ function f15(x, y::Float64)
     srand(1)
     z = x + rand()
-    return z+y_const
+    return z+y
 end
 @δ function f16(x)
     f15(x, 2.3) + x

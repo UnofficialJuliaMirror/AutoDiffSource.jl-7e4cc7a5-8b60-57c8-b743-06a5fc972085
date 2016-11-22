@@ -52,7 +52,20 @@ macro δ(f::Symbol)
 end
 
 function δ(expr)
-    delta(parse_function(expr))
+    ops = parse_function(expr)
+    ex = Expr(:block)
+    push!(ex.args, delta(ops))
+    ins = filter(isvar, ops.inputs)
+    if length(ins) > 1
+        for name in ins
+            if isa(name, Expr)
+                name = name.args[1]
+            end
+            op = parse_function(expr, Dict{Symbol,Symbol}(name => Symbol(string(name) * "_const")))
+            push!(ex.args, delta(op))
+        end
+    end
+    ex
 end
 
 end

@@ -46,7 +46,7 @@ function trainAutoencoder(epochs, training, testing, We1, We2, b1, b2, Wd, alpha
         total_error = 0.
         for i in 1:size(training, 2)
             input = training[:,i]
-            val, ∇autoencoderError = δautoencoderError(We1, We2, Wd, b1, b2, input)
+            val, ∇autoencoderError = δautoencoderError_const6(We1, We2, Wd, b1, b2, input)
             total_error += val
             if mod(i, 10_000) == 0
                 test_error = show_digits(testing, We1, We2, b1, b2, Wd)

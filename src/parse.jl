@@ -1,3 +1,14 @@
+remaps(mapping, x::Symbol) = get(mapping, x, x)
+function remaps(mapping, x::Expr)
+    if x.head == :(::)
+        Expr(x.head, get(mapping, x.args[1], x.args[1]), x.args[2])
+    elseif x.head == :(...)
+        Expr(x.head, get(mapping, x.args[1], x.args[1]))
+    else error("Unknown expression $x")
+    end
+end
+remaps(mapping, x::Number) = x
+
 type Op
     name::Symbol
     inputs::Vector
@@ -7,7 +18,8 @@ type Op
 
     function Op(name, inputs, outputs, body, info, mapping = Dict{Symbol, Symbol}())
         if !isempty(body)
-            remap = x -> get(mapping, x, x)
+            remap(x) = remaps(mapping, x)
+            map!(remap, inputs)
             uniques = Set{Symbol}()
             for op in body
                 map!(remap, op.inputs)
