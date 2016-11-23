@@ -68,8 +68,10 @@ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
 If you have function arguments that you don't need to differentiate:
 ```
 @δ f4(x, c) = sum(c .* x)
+
 # just call the version with the "_constN" signature, in this case argument #2 is constant
 z, ∇f4 = δf4_const2(x, c)
+
 # the derivative of c will not be calculated
 ∂x = ∇f4()
 ```
