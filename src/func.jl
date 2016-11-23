@@ -1,20 +1,18 @@
 const δceil_const = true
+const δcolon_const = true
 const δfloor_const = true
+const δlength_const = true
+const δones_const = true
 const δrand_const = true
 const δrandn_const = true
+const δref_const2 = true
 const δround_const = true
 const δsign_const = true
-const δlength_const = true
 const δsize_const = true
 const δsrand_const = true
 const δtrunc_const = true
-const δzeros_const = true
-const δones_const = true
-const δcolon_const = true
-const δref_const2 = true
 const δtuple = true
-δzeros(x::AbstractArray) = zeros(x)
-δzeros{T}(x::T)::T = 0.
+const δzeros_const = true
 safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
@@ -136,3 +134,5 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δtimes_const2(x, y) = (x*y, z->(z*y'))
 δtimes_const2(x::AbstractFloat, y) = (x*y, z->sum(z*y'))
 δtranspose(x) = (x', y->y')
+δzeros(x::AbstractArray) = zeros(x)
+δzeros{T}(x::T)::T = 0.
