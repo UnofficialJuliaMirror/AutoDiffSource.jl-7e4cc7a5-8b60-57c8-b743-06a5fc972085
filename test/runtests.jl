@@ -222,7 +222,7 @@ for o in [:.+, :.-, :.*, :./, :.^]
     @eval @test checkdiff_inferred($t, $δt, rand(), rand(3, 2))
 end
 
-# (vector), (matrix)
+# (scalar), (vector), (matrix)
 for o in [:abs, :sqrt, :exp, :log, :sign, :log1p, :expm1,
           :sin, :cos, :tan, :sinh, :cosh, :tanh, :asin, :acos, :atan,
           :round, :floor, :ceil, :trunc, :mod2pi,
@@ -230,6 +230,7 @@ for o in [:abs, :sqrt, :exp, :log, :sign, :log1p, :expm1,
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x) = sum($o.(x) + x)
+    @eval @test checkdiff_inferred($t, $δt, rand())
     @eval @test checkdiff_inferred($t, $δt, rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end
