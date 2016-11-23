@@ -1,6 +1,16 @@
 using AutoDiffSource
 using Base.Test
 
+function checkdiff_inferred(f, δf, x0...)
+    x = [x0...]
+    y0 = f(x...)
+    @assert length(y0) == 1 "Scalar functions only"
+    y, ∇f = Test.@inferred δf(x...)
+    isapprox(y0, y) || error("function values do not match")
+    ∂x = Test.@inferred ∇f()
+    checkgrad(f, x, ∂x)
+end
+
 # Test example
 @δ sigmoid(x) = 1 ./ (1 .+ exp.(-x))
 @δ function autoencoder(We1, We2, Wd, b1, b2, input)
@@ -12,17 +22,7 @@ end
     reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
     return sum((input - reconstructedInput).^2)
 end
-@assert checkdiff(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
-
-function checkdiff_inferred(f, δf, x0...)
-    x = [x0...]
-    y0 = f(x...)
-    @assert length(y0) == 1 "Scalar functions only"
-    y, ∇f = Test.@inferred δf(x...)
-    isapprox(y0, y) || error("function values do not match")
-    ∂x = Test.@inferred ∇f()
-    checkgrad(f, x, ∂x)
-end
+@assert checkdiff_inferred(autoencoderError, δautoencoderError, randn(3,3), randn(3,3), rand(3,3), randn(3), randn(3), randn(3))
 
 # Array indexing
 @δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1-x).^2)
