@@ -3,7 +3,8 @@ isvar(n::Symbol) = !endswith(string(n), "_const")
 isvar(n::Expr) = n.head == :(::) ? isvar(n.args[1]) : true
 isconst(n) = !isvar(n)
 
-const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus => :(-), :power => :(^))
+const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus => :(-), :power => :(^),
+                          :dot_times => :(.*), :dot_plus => :(.+), :dot_divide => :(./), :dot_minus => :(.-), :dot_power => :(.^))
 
 function delta(ops)
     funcname = Symbol("δ$(ops.name)")
@@ -14,7 +15,7 @@ function delta(ops)
     last_info = [Expr(:line)]
     for line in ops.body
         push_if_changed!(body, last_info, line.info)
-        name = replace(string(line.name), r"^dot_", "")
+        name = replace(string(line.name), r"^\.", "")
         constname = Symbol("δ$(name)_const")
         if line.name == :ref_const2
             nablas[line] = (:ref_const2, line.inputs[2])
@@ -26,20 +27,23 @@ function delta(ops)
                 temp = gensym(name)
                 push!(body, :($temp = $(line.inputs...)))
                 [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
-            elseif startswith(string(line.name), "dot_")
+            elseif startswith(string(line.name), ".")
                 push!(body, :($(toexpr(line.outputs)) = $sname.($(line.inputs...))))
             else
                 push!(body, :($(toexpr(line.outputs)) = $sname($(line.inputs...))))
             end
         else
-            name = string(line.name)
             nabla = gensym("∇" * name)
             nablas[line] = nabla
             temp = gensym(name)
             funcname = Symbol("δ" * name)
             # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
             # work around for https://github.com/JuliaLang/julia/issues/15276
-            push!(body, :($temp = $funcname($(line.inputs...))))
+            if startswith(string(line.name), ".")
+                push!(body, :($temp = δmulticast($funcname, $(line.inputs...))))
+            else
+                push!(body, :($temp = $funcname($(line.inputs...))))
+            end
             [push!(body, :($(line.outputs[k]) = $temp[$k])) for k in 1:length(line.outputs)]
             push!(body, :($nabla = $temp[$(length(line.outputs)+1)]))
             # end work around

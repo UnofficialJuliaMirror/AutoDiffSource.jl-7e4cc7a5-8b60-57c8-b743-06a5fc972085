@@ -16,15 +16,14 @@ export δlog1p, δexpm1, δsin, δcos, δtan, δsinh, δcosh, δtanh, δasin, δ
 export δround_const, δfloor_const, δceil_const, δtrunc_const, δmod2pi, δmaximum, δminimum, δtranspose
 export δerf, δerfc, δgamma, δlgamma, δmin, δmax, δmin_const1, δmax_const1, δmin_const2, δmax_const2
 
-export δdot_log1p, δdot_expm1, δdot_sin, δdot_cos, δdot_tan, δdot_sinh, δdot_cosh, δdot_tanh, δdot_asin, δdot_acos, δdot_atan
-export δdot_round_const, δdot_floor_const, δdot_ceil_const, δdot_trunc_const, δdot_mod2pi, δdot_transpose
-export δdot_erf, δdot_erfc, δdot_gamma, δdot_lgamma, δdot_min, δdot_max
-export δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
+export δdot_min, δdot_max, δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
+export δmulticast
 
 include("parse.jl")
 include("diff.jl")
 include("func.jl")
 include("checkdiff.jl")
+include("multicast.jl")
 
 macro δ(expr::Expr)
     esc(:( $expr; $(δ(macroexpand(expr)))))
@@ -53,7 +52,7 @@ end
 function δ(expr, info = Expr(:line))
     ops = parse_function(expr, info)
     for op in ops.body
-        name = replace(string(op.name), r"^dot_", "")
+        name = replace(string(op.name), r"^\.", "")
         if !isdefined(Symbol("δ$name")) && !isdefined(Symbol("δ$(name)_const"))
             eval(Main, :(@δ $(Symbol(name))))
         end

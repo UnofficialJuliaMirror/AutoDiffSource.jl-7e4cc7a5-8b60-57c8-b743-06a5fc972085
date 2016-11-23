@@ -115,7 +115,7 @@ function parse_expr!(ops, info, expr::Expr)
         opname(expr.args[1]), args
     elseif expr.head == :(.)
         @assert expr.args[2].head == :tuple
-        "dot_$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
+        ".$(expr.args[1])", [parse_arg!(ops, info, arg) for arg in expr.args[2].args]
     elseif expr.head == :ref
         args = [parse_arg!(ops, info, arg) for arg in expr.args]
         :ref, args
