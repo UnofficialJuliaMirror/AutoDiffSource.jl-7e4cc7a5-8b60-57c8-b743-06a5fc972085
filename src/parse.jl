@@ -66,6 +66,8 @@ function parse_line!(ops, info, line::Expr)
         outputs = parse_assign!(ops, info, line.args...)
     elseif line.head == :call || line.head == :(.)
         outputs = [parse_arg!(ops, info, line)]
+    elseif line.head == :return && isa(line.args[1], SlotNumber)
+        outputs = [Symbol(string(line.args[1]))]
     elseif line.head == :return && isa(line.args[1], Symbol)
         outputs = [line.args[1]]
     elseif line.head == :tuple || line.head == :return && line.args[1].head != :tuple
@@ -101,6 +103,11 @@ function parse_expr!(ops, info, expr::Expr)
     if expr.head == :tuple
         args = [parse_arg!(ops, info, arg) for arg in expr.args]
         :tuple, args
+    elseif expr.head == :call && expr.args[1] == GlobalRef(Base, :broadcast)
+        if isa(expr.args[2], GlobalRef)
+            expr.args[2] = expr.args[2].name
+        end
+        ".$(expr.args[2])", [parse_arg!(ops, info, arg) for arg in expr.args[3:end]]
     elseif expr.head == :call
         if isa(expr.args[1], GlobalRef)
             expr.args[1] = expr.args[1].name

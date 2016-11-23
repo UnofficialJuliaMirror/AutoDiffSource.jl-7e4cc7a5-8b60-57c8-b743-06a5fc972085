@@ -2,7 +2,8 @@ using AutoDiffSource
 using BenchmarkTools
 using ReverseDiffSource
 
-@δ rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1.-x).^2)
+rosenbrock(x, y) = sum(100*(y-x.^2).^2 + (1.-x).^2)
+
 @δ rosenbrock(x) = rosenbrock(x[1:length(x)-1], x[2:length(x)])
 
 # verify correctness

@@ -12,11 +12,12 @@ function checkdiff_inferred(f, δf, x0...)
 end
 
 # Test example
-@δ sigmoid(x) = 1 / (1 + exp(-x))
-@δ function autoencoder(We1, We2, Wd, b1, b2, input)
+sigmoid(x) = 1 / (1 + exp(-x))
+function autoencoder(We1, We2, Wd, b1, b2, input)
     firstLayer = sigmoid.(We1 * input + b1)
     encodedInput = sigmoid.(We2 * firstLayer + b2)
     reconstructedInput = sigmoid.(Wd * encodedInput)
+    return reconstructedInput
 end
 @δ function autoencoderError(We1, We2, Wd, b1, b2, input)
     reconstructedInput = autoencoder(We1, We2, Wd, b1, b2, input)
