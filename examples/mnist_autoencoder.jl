@@ -4,7 +4,7 @@ using MNIST # if not installed try Pkg.add("MNIST")
 using AutoDiffSource # if not installed try Pkg.add("AutoDiffSource")
 using PyPlot # if not installed try Pkg.add("PyPlot")
 
-sigmoid(x) = 1 / (1 + exp(-x))
+sigmoid(x) = 1 / (1 + exp(x))
 
 function autoencoder(We1, We2, Wd, b1, b2, input)
     firstLayer = sigmoid.(We1 * input + b1)
