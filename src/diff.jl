@@ -40,7 +40,8 @@ function delta(ops)
             # push!(body, :(($(line.outputs...), $nabla) = $name($(line.inputs...)))),
             # work around for https://github.com/JuliaLang/julia/issues/15276
             if startswith(string(line.name), ".")
-                push!(body, :($temp = δmulticast($funcname, $(line.inputs...))))
+                mcast = Symbol("δ$(name_const("multicast", line.inputs, line.outputs))")
+                push!(body, :($temp = $mcast($funcname, $(line.inputs...))))
             else
                 push!(body, :($temp = $funcname($(line.inputs...))))
             end
