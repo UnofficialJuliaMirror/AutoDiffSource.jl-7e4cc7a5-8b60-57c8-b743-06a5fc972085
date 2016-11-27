@@ -9,7 +9,7 @@ const reversenames = Dict(:times => :(*), :plus => :(+), :divide => :(/), :minus
 function delta(ops)
     funcname = Symbol("δ$(ops.name)")
     func = :(function $funcname($(ops.inputs...)); end)
-    body = func.args[2].args
+    body = func.args[2].args::Vector{Any}
     empty!(body)
     nablas = Dict()
     last_info = [Expr(:line)]
@@ -62,7 +62,7 @@ function ∇(ops, nablas)
     if length(inputs) == 1
         func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1f0)
     end
-    body = func.args[2].args
+    body = func.args[2].args::Vector{Any}
     empty!(body)
     dupes = Set(inputs)
     emptys = Set()
