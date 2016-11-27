@@ -134,9 +134,9 @@ function parse_expr!(ops, info, expr::Expr)
 end
 
 opname(name) = get(opnames, name, name)
-const opnames = Dict(:(.*) => :dot_times, :(*) => :times, :(.+) => :dot_plus, :(+) => :plus,
-                     :(./) => :dot_divide, :(/) => :divide, :(.-) => :dot_minus, :(-) => :minus,
-                     :(.^) => :dot_power, :(^) => :power, :getindex => :ref)
+const opnames = Dict(:(.*) => ".times", :(*) => "times", :(.+) => ".plus", :(+) => "plus",
+                     :(./) => ".divide", :(/) => "divide", :(.-) => ".minus", :(-) => "minus",
+                     :(.^) => ".power", :(^) => "power", :getindex => :ref)
 
 function parse_arg!(ops, info, arg::Expr)
     func, inputs = parse_expr!(ops, info, arg)

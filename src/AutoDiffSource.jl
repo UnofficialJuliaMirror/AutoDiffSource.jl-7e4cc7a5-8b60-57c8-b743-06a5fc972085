@@ -4,11 +4,8 @@ module AutoDiffSource
 export @δ, checkdiff, checkgrad
 
 export δplus, δminus, δtimes, δdivide, δabs, δsum, δsqrt, δexp, δlog, δpower, δdot
-export δdot_plus, δdot_minus, δdot_times, δdot_divide, δdot_abs, δdot_sqrt, δdot_exp, δdot_log, δdot_power
 export δplus_const1, δminus_const1, δtimes_const1, δdivide_const1, δpower_const1
-export δdot_plus_const1, δdot_minus_const1, δdot_times_const1, δdot_divide_const1, δdot_power_const1
 export δplus_const2, δminus_const2, δtimes_const2, δdivide_const2, δpower_const2
-export δdot_plus_const2, δdot_minus_const2, δdot_times_const2, δdot_divide_const2, δdot_power_const2
 export δfanout, δzeros, δzeros_const, δones_const, δlength_const, δcolon_const, δref_const2, δtuple
 export δsrand_const, δrand_const, δrandn_const, δsize_const, δsign_const
 
@@ -16,7 +13,6 @@ export δlog1p, δexpm1, δsin, δcos, δtan, δsinh, δcosh, δtanh, δasin, δ
 export δround_const, δfloor_const, δceil_const, δtrunc_const, δmod2pi, δmaximum, δminimum, δtranspose
 export δerf, δerfc, δgamma, δlgamma, δmin, δmax, δmin_const1, δmax_const1, δmin_const2, δmax_const2
 
-export δdot_min, δdot_max, δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
 export δmulticast, δmulticast_const1, δmulticast_const2
 
 include("parse.jl")
