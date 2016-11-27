@@ -17,7 +17,7 @@ export δround_const, δfloor_const, δceil_const, δtrunc_const, δmod2pi, δma
 export δerf, δerfc, δgamma, δlgamma, δmin, δmax, δmin_const1, δmax_const1, δmin_const2, δmax_const2
 
 export δdot_min, δdot_max, δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
-export δmulticast
+export δmulticast, δmulticast_const1, δmulticast_const2
 
 include("parse.jl")
 include("diff.jl")
