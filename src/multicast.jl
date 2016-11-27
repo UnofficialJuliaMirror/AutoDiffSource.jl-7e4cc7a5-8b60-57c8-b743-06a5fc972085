@@ -35,7 +35,7 @@ end
 δmulticast_const1(f, x1::AbstractFloat, x2::AbstractFloat) = f(x1, x2)
 δmulticast_const2(f, x1::AbstractFloat, x2::AbstractFloat) = f(x1, x2)
 
-function δmulticast(f, x1::AbstractArray, x2::AbstractArray)
+function δmulticast{T<:AbstractArray}(f, x1::T, x2::T)
     iter = Base.CartesianRange(size(x1))
     temp = next(iter, start(iter))
     I = temp[1]
