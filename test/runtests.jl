@@ -214,6 +214,7 @@ for o in [:.+, :.-, :.*, :./, :.^]
     t = gensym(o)
     δt = Symbol("δ$t")
     @eval @δ $t(x, y) = sum($o(x, y))
+    @eval @test checkdiff_inferred($t, $δt, rand(), rand())
     @eval @test checkdiff_inferred($t, $δt, rand(3), rand(3, 2))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2), rand(3))
     @eval @test checkdiff_inferred($t, $δt, rand(5), rand())
