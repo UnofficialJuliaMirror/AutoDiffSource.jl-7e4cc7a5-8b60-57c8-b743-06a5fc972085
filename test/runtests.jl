@@ -161,6 +161,16 @@ end
 end
 @test checkdiff_inferred(f20, δf20, rand())
 
+# test broadcast
+@eval @δ f21(x, y) = sum(f13.(x, y))
+@eval @test checkdiff_inferred(f21, δf21, rand(), rand())
+@eval @test checkdiff_inferred(f21, δf21, rand(3), rand(3, 2))
+@eval @test checkdiff_inferred(f21, δf21, rand(3, 2), rand(3))
+@eval @test checkdiff_inferred(f21, δf21, rand(5), rand())
+@eval @test checkdiff_inferred(f21, δf21, rand(3, 2), rand())
+@eval @test checkdiff_inferred(f21, δf21, rand(), rand(5))
+@eval @test checkdiff_inferred(f21, δf21, rand(), rand(3, 2))
+
 # (scalar, scalar), (scalar, const), (const, scalar), (const, const)
 for o in [:+, :-, :*, :/, :^, :min, :max]
     t = gensym(o)
