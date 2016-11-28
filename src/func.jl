@@ -20,7 +20,7 @@ safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
 δatan(x) = (atan(x), z->z/(1+x*x))
 δcos(x) = (cos(x), z->-z*sin(x))
 δcosh(x) = (cosh(x), z->z*sinh(x))
-δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t./y))))
+δdivide(x::AbstractArray, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -sum(z.*t)/y)))
 δdivide(x::AbstractFloat, y::AbstractFloat) = (t = x/y; (t, z->(z/y, -z*t/y)))
 δdivide_const1(x, y) = (t = x/y; (t, z->(-z*t/y)))
 δdivide_const2(x, y) = (x/y, z->(z/y))
