@@ -127,10 +127,7 @@ function ∇multicast_vector_matrix(∇v, x, idx)
     val = ∇v[I](x[I])
     v1 = zeros(typeof(val[1]), size(x, idx))
     v2 = similar(Array{typeof(val[2])}, size(x))
-    v1[I.I[idx]] = val[1]
-    v2[I] = val[2]
-    while !done(iter, st)
-        I, st = next(iter, st)
+    @simd for I in iter
         vv1, v2[I] = ∇v[I](x[I])
         v1[I.I[idx]] += vv1
     end
@@ -162,10 +159,7 @@ function ∇multicast_matrix_vector(∇v, x, idx)
     val = ∇v[I](x[I])
     v1 = similar(Array{typeof(val[1])}, size(x))
     v2 = zeros(typeof(val[2]), size(x, idx))
-    v1[I] = val[1]
-    v2[I.I[idx]] = val[2]
-    while !done(iter, st)
-        I, st = next(iter, st)
+    @simd for I in iter
         v1[I], vv2 = ∇v[I](x[I])
         v2[I.I[idx]] += vv2
     end
@@ -197,8 +191,7 @@ function ∇multicast_float_array(∇v, x)
     v2 = similar(Array{typeof(val[2])}, size(x))
     v1 = val[1]
     v2[I] = val[2]
-    while !done(iter, st)
-        I, st = next(iter, st)
+    @simd for I in 2:length(x)
         vv1, v2[I] = ∇v[I](x[I])
         v1 += vv1
     end
@@ -230,8 +223,7 @@ function ∇multicast_array_float(∇v, x)
     v1 = similar(Array{typeof(val[1])}, size(x))
     v1[I] = val[1]
     v2 = val[2]
-    while !done(iter, st)
-        I, st = next(iter, st)
+    @simd for I in 2:length(x)
         v1[I], vv2 = ∇v[I](x[I])
         v2 += vv2
     end
