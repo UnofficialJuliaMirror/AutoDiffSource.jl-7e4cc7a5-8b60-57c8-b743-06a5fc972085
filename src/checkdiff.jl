@@ -3,8 +3,10 @@ function checkdiff(f, δf, x0...)
     y0 = f(x...)
     @assert length(y0) == 1 "Scalar functions only"
     y, ∇f = δf(x...)
-    isapprox(y0, y) || error("function values do not match")
+    @assert isapprox(y0, y) "Return values do not match"
+#    @assert typeof(y0) === typeof(y) "Return type doesn't match"
     ∂x = ∇f()
+#    @assert typeof(x0) === typeof(∂x) "Gradient type doesn't match"
     checkgrad(f, x, ∂x)
 end
 

@@ -6,10 +6,17 @@ function checkdiff_inferred(f, δf, x0...)
     y0 = f(x...)
     @assert length(y0) == 1 "Scalar functions only"
     y, ∇f = Test.@inferred δf(x...)
-    isapprox(y0, y) || error("function values do not match")
-    ∂x = Test.@inferred ∇f()
+    @assert isapprox(y0, y) "Return values do not match"
+    @assert typeof(y0) === typeof(y) "Return type doesn't match"
+    ∂x = Test.@inferred ∇f(1.0)
+    if isa(∂x, Tuple)
+        @assert typeof(x0) === typeof(∂x) "Gradient type doesn't match: $(typeof(x0)) vs $(typeof(∂x))"
+    else
+        @assert typeof(x0) === typeof((∂x,)) "Gradient type doesn't match: : $(typeof(x0)) vs $(typeof((∂x,)))"
+    end
     checkgrad(f, x, ∂x)
 end
+
 
 # Test example
 sigmoid(x) = 1 / (1 + exp(-x))
