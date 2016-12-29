@@ -41,7 +41,7 @@ end
 @assert checkdiff_inferred(rosenbrock, δrosenbrock, randn(3))
 
 # diffentiate a 3rd party function without source code, recursively
-rosen2(x::Vector{Float64}, y::Vector{Float64}) = sum(100*(y-x.^2).^2 + (1-x).^2)
+@δ rosen2(x::Vector{Float64}, y::Vector{Float64}) = sum(100*(y-x.^2).^2 + (1-x).^2)
 function rosen(x::Vector{Float64})
     l = length(x)
     rosen2(x[1:l-1], x[2:l])
