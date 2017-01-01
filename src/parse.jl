@@ -12,19 +12,19 @@ type Op
     function Op(name, inputs, outputs, body, info, mapping = Dict{Symbol, Symbol}())
         if !isempty(body)
             remap(x) = remaps(mapping, x)
-            map!(remap, inputs)
+            map!(remap, inputs, inputs)
             uniques = Set{Symbol}()
             for op in body
-                map!(remap, op.inputs)
+                map!(remap, op.inputs, op.inputs)
                 union!(uniques, filter(o->isa(o, Symbol), op.inputs))
                 if isdefined(Symbol("δ$(op.name)_const")) || all(isconst, op.inputs)
                     [mapping[o] = Symbol("$(o)_const") for o in filter(isvar, op.outputs)]
                 end
                 [mapping[o] = gensym(o) for o in filter(o->o in inputs, op.outputs)]
-                map!(remap, op.outputs)
+                map!(remap, op.outputs, op.outputs)
                 op.name = name_const(op.name, op.inputs, op.outputs)
             end
-            map!(remap, outputs)
+            map!(remap, outputs, outputs)
             name = name_const(name, inputs, outputs)
         end
         new(name, inputs, outputs, body, info)
