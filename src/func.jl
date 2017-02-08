@@ -13,7 +13,7 @@ const δsrand_const = true
 const δtrunc_const = true
 const δtuple = true
 const δzeros_const = true
-safediv{T}(x::T, y) = y == 0 ? 0::T : x / y
+safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
 δasin(x) = (asin(x), z->z/sqrt(1-x*x))
