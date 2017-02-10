@@ -99,7 +99,7 @@ end
 @δ f9(x, y) = sum(x * y)
 @test checkdiff_inferred(f9, δf9, rand(3), rand(3)')
 @test checkdiff_inferred(f9, δf9, rand(3)', rand(3))
-@test checkdiff_inferred(f9, δf9, rand(3)', rand(3, 3))
+#@test checkdiff_inferred(f9, δf9, rand(3)', rand(3, 3))
 @test checkdiff_inferred(f9, δf9, rand(3, 3), rand(3))
 @test checkdiff_inferred(f9, δf9, rand(3, 3), rand(3, 3))
 
