@@ -19,6 +19,10 @@ export δerf, δerfc, δgamma, δlgamma, δmin, δmax, δmin_const1, δmax_const
 export δdot_min, δdot_max, δdot_min_const1, δdot_max_const1, δdot_min_const2, δdot_max_const2
 export δmulticast, δmulticast_const1, δmulticast_const2
 
+if VERSION >= v"0.6-"
+    using SpecialFunctions
+end
+
 include("parse.jl")
 include("diff.jl")
 include("func.jl")
