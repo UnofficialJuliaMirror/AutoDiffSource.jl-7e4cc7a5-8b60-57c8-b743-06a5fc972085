@@ -61,7 +61,7 @@ function ∇(ops, nablas)
     inputs = map(topartial, filter(isvar, ops.outputs))
     func = :(function $name($(inputs...)); end)
     if length(inputs) == 1
-        func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1f0)
+        func.args[1].args[2] = Expr(:kw, func.args[1].args[2], 1.0)
     end
     body = func.args[2].args::Vector{Any}
     empty!(body)

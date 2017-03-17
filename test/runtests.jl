@@ -328,3 +328,8 @@ for o in [:min, :max]
     @eval @test checkdiff_inferred($t, $δt, rand(5))
     @eval @test checkdiff_inferred($t, $δt, rand(3, 2))
 end
+
+# https://github.com/gaika/AutoDiffSource.jl/issues/15
+@δ f_15(x, y) = (x + 2y) * y^2
+v, ∇f_25 = δf_15(3,2)
+@test v == 28.0 && ∇f_25() == (4.0, 36.0)
