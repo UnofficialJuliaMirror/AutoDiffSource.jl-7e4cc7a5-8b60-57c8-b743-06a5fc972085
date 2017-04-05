@@ -77,4 +77,6 @@ function δ(expr, info = Expr(:line))
     ex
 end
 
+Base.fill{T,N}(::Type, x::T, dims::NTuple{N}) = fill(x, dims)
+
 end
