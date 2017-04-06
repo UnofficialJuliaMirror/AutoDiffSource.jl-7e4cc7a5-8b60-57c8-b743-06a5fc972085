@@ -1,6 +1,6 @@
 # AutoDiffSource
 
-Automatic differentiation with source code transformation in Julia (reverse mode). Functions can be nested and have multiple scalar or tensor return values.
+Automatic differentiation with source code transformation in Julia (reverse mode). Functions can be nested and have multiple scalar or tensor return values. Works with [ArrayFire GPU arrays](https://github.com/gaika/arrayfire.jl).
 
 [![AutoDiffSource](http://pkg.julialang.org/badges/AutoDiffSource_0.5.svg)](http://pkg.julialang.org/?pkg=AutoDiffSource)
 [![AutoDiffSource](http://pkg.julialang.org/badges/AutoDiffSource_0.6.svg)](http://pkg.julialang.org/?pkg=AutoDiffSource)
