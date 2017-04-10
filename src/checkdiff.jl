@@ -20,7 +20,7 @@ function checkgrad(f, x, ∂x, h = 1e-8)
             x2 = deepcopy(x)
             x2[k] += h
             y2 = f(x2...)
-            isapprox(2h * ∂xₖ, y2-y1, atol=h) || error("gradient for argument #$k doesn't match")
+            isapprox(2h * ∂xₖ, y2-y1, atol=h) || error("gradient for argument #$k doesn't match by $((y2-y1)/(2h*∂xₖ))")
         elseif isa(x[k], AbstractArray)
             for l = eachindex(x[k])
                 x1 = deepcopy(x)
@@ -29,7 +29,7 @@ function checkgrad(f, x, ∂x, h = 1e-8)
                 x2 = deepcopy(x)
                 x2[k][l] += h
                 y2 = f(x2...)
-                isapprox(2h * ∂xₖ[l], y2-y1, atol=h) || error("gradient for argument #$k element $l doesn't match")
+                isapprox(2h * ∂xₖ[l], y2-y1, atol=h) || error("gradient for argument #$k element $l doesn't match by $((y2-y1)/(2h*∂xₖ[l]))")
             end
         else error("not supported argument #$k type: $(typeof(x[k]))")
         end
