@@ -73,6 +73,23 @@ function δ(expr, info = Expr(:line))
             op = parse_function(expr, info, Dict{Symbol,Symbol}(name => Symbol(string(name) * "_const")))
             push!(ex.args, delta(op))
         end
+        if length(ins) > 2
+            for name1 in ins
+                if isa(name1, Expr)
+                    name1 = name1.args[1]
+                end
+                for name2 in ins
+                    if isa(name2, Expr)
+                        name2 = name2.args[1]
+                    end
+                    if name2 > name1
+                        op = parse_function(expr, info, Dict{Symbol,Symbol}(name1 => Symbol(string(name1) * "_const"),
+                                                                            name2 => Symbol(string(name2) * "_const")))
+                        push!(ex.args, delta(op))
+                    end
+                end
+            end
+        end
     end
     ex
 end
