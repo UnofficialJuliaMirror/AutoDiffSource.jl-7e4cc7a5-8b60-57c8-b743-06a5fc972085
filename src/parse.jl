@@ -53,7 +53,8 @@ function parse_function(expr, info, mapping = Dict{Symbol, Symbol}())
     body = expr.args[2]
     @assert body.head == :block "Body of the function is not found"
 
-    outputs = ops = []
+    local outputs
+    ops = []
     [(info, outputs) = parse_line!(ops, info, line) for line in body.args]
     Op(name, inputs, outputs, ops, info, mapping)
 end
