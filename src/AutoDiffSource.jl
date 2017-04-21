@@ -3,7 +3,7 @@ module AutoDiffSource
 
 export @δ, δ, checkdiff, checkgrad
 
-export δplus, δminus, δtimes, δdivide, δabs, δsum, δsqrt, δexp, δlog, δpower, δdot
+export δplus, δminus, δtimes, δdivide, δabs, δsum, δmean, δsqrt, δexp, δlog, δpower, δdot
 export δdot_plus, δdot_minus, δdot_times, δdot_divide, δdot_abs, δdot_sqrt, δdot_exp, δdot_log, δdot_power
 export δplus_const1, δminus_const1, δtimes_const1, δdivide_const1, δpower_const1
 export δdot_plus_const1, δdot_minus_const1, δdot_times_const1, δdot_divide_const1, δdot_power_const1

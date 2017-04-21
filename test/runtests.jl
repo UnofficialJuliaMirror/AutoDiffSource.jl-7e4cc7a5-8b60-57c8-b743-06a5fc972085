@@ -1,4 +1,4 @@
-using AutoDiffSource
+    using AutoDiffSource
 using Base.Test
 
 function checkdiff_inferred(f, δf, x0...)
@@ -169,7 +169,7 @@ end
 @test checkdiff_inferred(f20, δf20, rand())
 
 # test broadcast
-@eval @δ f21(x, y) = sum(f13.(x, y))
+@eval @δ f21(x, y) = mean(f13.(x, y))
 @eval @test checkdiff_inferred(f21, δf21, rand(), rand())
 @eval @test checkdiff_inferred(f21, δf21, rand(3), rand(3, 2))
 @eval @test checkdiff_inferred(f21, δf21, rand(3, 2), rand(3))

@@ -117,3 +117,5 @@ safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δtranspose(x) = (x', y->y')
 δzeros(x::AbstractArray) = zeros(x)
 δzeros{T}(x::T)::T = 0.
+δmean(x::Real) = (x, z->z)
+δmean{T}(x::T) = (t = size(x); (mean(x), z->fill(T, z/prod(t), t)))
