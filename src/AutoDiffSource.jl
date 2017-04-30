@@ -94,8 +94,4 @@ function δ(expr, info = Expr(:line))
     ex
 end
 
-Base.fill{T,N}(::Type, x::T, dims::NTuple{N}) = fill(x, dims)
-Base.fill{T,N}(::Type{Array{T,N}}, x, dims::NTuple{N}) = fill(T(x), dims)
-Base.fill{T,N}(::Type{AbstractArray{T,N}}, x, dims::NTuple{N}) = fill(T(x), dims)
-
 end

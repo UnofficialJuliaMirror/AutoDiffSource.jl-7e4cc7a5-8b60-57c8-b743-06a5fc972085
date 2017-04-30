@@ -99,7 +99,7 @@ safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δsin(x) = (sin(x), z->z*cos(x))
 δsinh(x) = (sinh(x), z->z*cosh(x))
 δsqrt(x) = (t = sqrt(x); (t, z->0.5*z/t))
-δsum{T}(x::T) = (t = size(x); (sum(x), z->fill(T, z, t)))
+δsum(x::AbstractArray) = (t = size(x); (sum(x), z->fill(z, t)))
 δsum(x::Real) = (x, z->z)
 δtan(x) = (t = tan(x); (t, z->z*(1+t*t)))
 δtanh(x) = (t = tanh(x); (t, z->z*(1-t*t)))
@@ -118,4 +118,4 @@ safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δzeros(x::AbstractArray) = zeros(x)
 δzeros{T}(x::T)::T = 0.
 δmean(x::Real) = (x, z->z)
-δmean{T}(x::T) = (t = size(x); (mean(x), z->fill(T, z/prod(t), t)))
+δmean(x::AbstractArray) = (t = size(x); (mean(x), z->fill(z/prod(t), t)))
