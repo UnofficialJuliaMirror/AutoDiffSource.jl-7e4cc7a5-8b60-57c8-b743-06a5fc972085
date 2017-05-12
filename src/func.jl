@@ -13,6 +13,29 @@ const δsrand_const = true
 const δtrunc_const = true
 const δtuple = true
 const δzeros_const = true
+
+function fit(x, sz::Tuple{Int, Int})
+    if size(x) == sz
+        x
+    elseif sz[1] == 1 && sz[2] != 1
+        sum(x, 1)
+    elseif sz[2] == 1 && sz[1] != 1
+        sum(x, 2)
+    else
+        fill(sum(x), sz)
+    end
+end
+function fit(x, sz::Tuple{Int})
+    if size(x) == sz
+        vec(x)
+    elseif sz[1] == 1
+        fill(sum(x), sz)
+    else
+        vec(sum(x, 2))
+    end
+end
+fit(x, sz::Tuple{}) = sum(x)
+
 safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δabs(x) = (abs(x), z->z*sign(x))
 δacos(x) = (acos(x), z->-z/sqrt(1-x*x))
@@ -43,9 +66,9 @@ safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δdot_plus(x::Real, y::AbstractArray) = (x.+y, z->(sum(z), z))
 δdot_plus(x::AbstractMatrix, y::AbstractVector) = (x.+y, z->(z, vec(sum(z, 2))))
 δdot_plus(x::AbstractVector, y::AbstractMatrix) = (x.+y, z->(vec(sum(z, 2)), z))
-δdot_plus_const1(x, y) = (x.+y, z->z)
-δdot_plus_const2(x, y) = (x.+y, z->z)
-δdot_plus{T}(x::T, y::T) = (x.+y, z->(z, z))
+δdot_plus_const1(x, y) = (sy = size(y); (x.+y, z->fit(z, sy)))
+δdot_plus_const2(x, y) = (sx = size(x); (x.+y, z->fit(z, sx)))
+δdot_plus{T}(x::T, y::T) = (sx = size(x); sy = size(y); (x.+y, z->(fit(z, sx), fit(z, sy))))
 δdot_power(x::AbstractArray, y::Real) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), sum(z.*t.*log.(x)))))
 δdot_power(x::Real, y::AbstractArray) = (t = x.^y; (t, z->(safediv(sum(z.*y.*t), x), z.*t.*log.(x))))
 δdot_power(x::AbstractMatrix, y::AbstractVector) = (t = x.^y; (t, z->(safediv.(z.*y.*t, x), vec(sum(z.*t.*log.(x), 2)))))
