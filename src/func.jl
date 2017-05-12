@@ -14,7 +14,7 @@ const δtrunc_const = true
 const δtuple = true
 const δzeros_const = true
 
-function fit(x, sz::Tuple{Int, Int})
+function fit{T}(::Type{T}, x, sz::Tuple{Int, Int})::T
     if size(x) == sz
         x
     elseif sz[1] == 1 && sz[2] != 1
@@ -25,7 +25,7 @@ function fit(x, sz::Tuple{Int, Int})
         fill(sum(x), sz)
     end
 end
-function fit(x, sz::Tuple{Int})
+function fit{T}(::Type{T}, x, sz::Tuple{Int})::T
     if size(x) == sz
         vec(x)
     elseif sz[1] == 1
@@ -34,7 +34,7 @@ function fit(x, sz::Tuple{Int})
         vec(sum(x, 2))
     end
 end
-fit(x, sz::Tuple{}) = sum(x)
+fit{T}(::Type{T}, x, sz::Tuple{})::T = sum(x)
 
 safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δabs(x) = (abs(x), z->z*sign(x))
@@ -48,21 +48,25 @@ safediv{T}(x::T, y) = y == 0 ? T(0) : x / y
 δdivide_const1(x, y) = (t = x/y; (t, z->(-z*t/y)))
 δdivide_const2(x, y) = (x/y, z->(z/y))
 δdot(x, y) = (dot(x, y), z->(z.*y, z.*x))
-δdot_divide_const1(x, y) = (sy = size(y); t = x./y; (t, z->-fit(z.*t./y, sy)))
-δdot_divide_const2(x, y) = (sx = size(x); (x./y, z->fit(z./y, sx)))
-δdot_divide(x, y) = (sx = size(x); sy = size(y); t = x./y; (t, z->(fit(z./y, sx), -fit(z.*t./y, sy))))
-δdot_minus_const1(x, y) = (sy = size(y); (x.-y, z->-fit(z, sy)))
-δdot_minus_const2(x, y) = (sx = size(x); (x.-y, z->fit(z, sx)))
-δdot_minus(x, y) = (sx = size(x); sy = size(y); (x.-y, z->(fit(z, sx), -fit(z, sy))))
-δdot_plus_const1(x, y) = (sy = size(y); (x.+y, z->fit(z, sy)))
-δdot_plus_const2(x, y) = (sx = size(x); (x.+y, z->fit(z, sx)))
-δdot_plus(x, y) = (sx = size(x); sy = size(y); (x.+y, z->(fit(z, sx), fit(z, sy))))
-δdot_power_const1(x, y) = (sy = size(y); t = x.^y; (t, z->fit(z.*t.*log.(x), sy)))
-δdot_power_const2(x, y) = (sx = size(x); t = x.^y; (t, z->fit(y == 2 ? z.*2x : safediv.(z.*y.*t, x), sx)))
-δdot_power(x, y) = (sx = size(x); sy = size(y); t = x.^y; (t, z->(fit(safediv.(z.*y.*t, x), sx), fit(z.*t.*log.(x), sy))))
-δdot_times_const1(x, y) = (sy = size(y); (x.*y, z->fit(z.*x, sy)))
-δdot_times_const2(x, y) = (sx = size(x); (x.*y, z->fit(z.*y, sx)))
-δdot_times(x, y) = (sx = size(x); sy = size(y); (x.*y, z->(fit(z.*y, sx), fit(z.*x, sy))))
+δdot_divide_const1{T}(x, y::T) = (sy = size(y); t = x./y; (t, z->-fit(T, z.*t./y, sy)))
+δdot_divide_const2{T}(x::T, y) = (sx = size(x); (x./y, z->fit(T, z./y, sx)))
+δdot_divide{TX,TY}(x::TX, y::TY) = (sx = size(x); sy = size(y); t = x./y; (t, z->(fit(TX, z./y, sx), -fit(TY, z.*t./y, sy))))
+δdot_minus_const1{T}(x, y::T) = (sy = size(y); (x.-y, z->-fit(T, z, sy)))
+δdot_minus_const2{T}(x::T, y) = (sx = size(x); (x.-y, z->fit(T, z, sx)))
+δdot_minus{TX,TY}(x::TX, y::TY) = (sx = size(x); sy = size(y); (x.-y, z->(fit(TX, z, sx), -fit(TY, z, sy))))
+δdot_plus_const1{T}(x, y::T) = (sy = size(y); (x.+y, z->fit(T, z, sy)))
+δdot_plus_const2{T}(x::T, y) = (sx = size(x); (x.+y, z->fit(T, z, sx)))
+δdot_plus{TX,TY}(x::TX, y::TY) = (sx = size(x); sy = size(y); (x.+y, z->(fit(TX, z, sx), fit(TY, z, sy))))
+δdot_power_const1{T}(x, y::T) = (sy = size(y); t = x.^y; (t, z->fit(T, z.*t.*log.(x), sy)))
+δdot_power_const2{T}(x::T, y) = (sx = size(x); t = x.^y; (t, z->fit(T, y == 2 ? z.*2x : safediv.(z.*y.*t, x), sx)))
+function δdot_power{TX,TY}(x::TX, y::TY)
+    sx = size(x); sy = size(y)
+    t = x.^y
+    t, z->(fit(TX, safediv.(z.*y.*t, x), sx), fit(TY, z.*t.*log.(x), sy))
+end
+δdot_times_const1{T}(x, y::T) = (sy = size(y); (x.*y, z->fit(T, z.*x, sy)))
+δdot_times_const2{T}(x::T, y) = (sx = size(x); (x.*y, z->fit(T, z.*y, sx)))
+δdot_times{TX,TY}(x::TX, y::TY) = (sx = size(x); sy = size(y); (x.*y, z->(fit(TX, z.*y, sx), fit(TY, z.*x, sy))))
 δerf(x) = (erf(x), y->y*2/sqrt(π)*exp(-x*x))
 δerfc(x) = (erfc(x), y->-y*2/sqrt(π)*exp(-x*x))
 δexp(x) = (t = exp(x); (t, z->z*t))
