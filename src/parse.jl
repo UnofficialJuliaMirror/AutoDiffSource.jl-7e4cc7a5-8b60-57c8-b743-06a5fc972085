@@ -2,7 +2,7 @@ remaps(mapping, x::Symbol) = get(mapping, x, x)
 remaps(mapping, x::Expr) = Expr(x.head, remaps(mapping, x.args[1]), x.args[2:end]...)
 remaps(mapping, x::Number) = x
 
-type Op
+@compat mutable struct Op
     name::Symbol
     inputs::Vector
     outputs::Vector
@@ -59,7 +59,7 @@ function parse_function(expr, info, mapping = Dict{Symbol, Symbol}())
     Op(name, inputs, outputs, ops, info, mapping)
 end
 
-parse_line!(ops, info, line::LineNumberNode) = Expr(:line, line.line, info.args[2]), []
+parse_line!(ops, info, line::LineNumberNode) = info, []
 parse_line!(ops, info, line::Symbol) = info, [line]
 function parse_line!(ops, info, line::Expr)
     outputs = []
