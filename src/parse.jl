@@ -31,14 +31,8 @@ type Op
     end
 end
 
-if VERSION < v"0.7-"
-    macro isdefined(s)
-        esc(:(isdefined($s)))
-    end
-end
-
 function name_const(name, inputs, outputs)
-    if @isdefined(Symbol("δ$(name)_const")) || all(isconst, inputs) || all(isvar, inputs) || all(isconst, outputs)
+    if isdefined(Symbol("δ$(name)_const")) || all(isconst, inputs) || all(isvar, inputs) || all(isconst, outputs)
         return name
     end
     n = string(name)
